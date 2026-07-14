@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Attribute Management | Edit Attribute</title>
+
+    <meta name="description" content="Edit an existing HTML attribute.">
+
+    <meta property="og:title" content="Edit Attribute">
+    <meta property="og:description" content="Edit an existing HTML attribute.">
+    <meta property="og:type" content="website">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://example.com/attribute-app/edit-attribute.html">
+
+    <!-- Favicons -->
+    <link rel="icon" href="assets/favicon.ico">
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+
+    <!-- Site stylesheet -->
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+<body>
+
+    <a href="#main-content" class="skip-link">
+        Skip to main content
+    </a>
+
+    <header role="banner">
+
+        <h1>
+            Attribute Management - Edit Attribute
+        </h1>
+
+        <nav role="navigation" aria-label="Primary">
+
+            <ul>
+
+                <li>
+                    <a href="index.html">
+                        Attribute List
+                    </a>
+                </li>
+
+                <li>
+                    <a href="edit-attribute.html" aria-current="page">
+                        Edit Attribute
+                    </a>
+                </li>
+
+            </ul>
+
+        </nav>
+
+    </header>
+
+    <main id="main-content">
+
+        <!--
+        This region will display a summary of form validation errors.
+        It is hidden by default and will be populated by JavaScript in A3.
+        -->
+
+        <div id="form-error-summary" role="alert" aria-live="assertive" hidden>
+        </div>
+
+        <section id="attribute-form-section" aria-labelledby="form-title">
+
+            <h2 id="form-title">
+                Edit Attribute Form
+            </h2>
+
+            <!--
+            The <time> element provides a machine-readable date using the datetime
+            attribute while displaying a human-readable date. Unlike a <span>,
+            assistive technologies, search engines and scripts recognize it as a date.
+            -->
+
+            <p class="meta">
+
+                Created On:
+                <time datetime="2026-06-15">
+                    15 June 2026
+                </time>
+
+                <br>
+
+                Created By:
+                John Smith
+
+            </p>
+
+            <form id="attribute-form" method="post" action="#" novalidate aria-labelledby="form-title">
+
+                <fieldset id="attribute-details">
+
+                    
+                    <legend>
+                        Attribute Details
+                    </legend>
+
+                    <input type="hidden" id="attribute-id" name="attributeId" value="101">
+
+
+                    <div class="form-group">
+
+                        <label for="attribute-name">
+                            Attribute Name
+                        </label>
+
+                        <input type="text" id="attribute-name" name="attributeName" value="Color" required
+                            minlength="2" maxlength="50" pattern="[A-Za-z ]+"
+                            aria-describedby="attribute-name-hint attribute-name-error"
+                            placeholder="Enter attribute name">
+
+                        <span id="attribute-name-hint" class="form-hint">
+
+                            Enter a meaningful attribute name using only letters and spaces.
+
+                        </span>
+
+                        <span id="attribute-name-error" class="form-error" role="alert" aria-live="polite">
+
+                        </span>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label for="business-unit">
+                            Business Unit
+                        </label>
+
+                        <select id="business-unit" name="businessUnit" required
+                            aria-describedby="business-unit-hint business-unit-error">
+
+                            <option value="">
+                                Select Business Unit
+                            </option>
+
+                            <option value="sales" selected>Sales</option>
+                            <option value="retail">Retail</option>
+                            <option value="marketing">Marketing</option>
+                            <option value="manufacturing">Manufacturing</option>
+                            <option value="logistics">Logistics</option>
+                            <option value="product-management">Product Management</option>
+                            <option value="operations">Operations</option>
+                            <option value="human-resources">Human Resources</option>
+
+                        </select>
+
+                        <span id="business-unit-hint" class="form-hint">
+
+                            Select the business unit responsible for this attribute.
+
+                        </span>
+
+                        <span id="business-unit-error" class="form-error" role="alert" aria-live="polite">
+                        </span>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label for="customer-location">
+                            Customer Location
+                        </label>
+
+                        <select id="customer-location" name="customerLocation" required
+                            aria-describedby="customer-location-hint customer-location-error">
+
+                            <option value="">
+                                Select Customer Location
+                            </option>
+
+                            <option value="new-york" selected>New York</option>
+                            <option value="chicago">Chicago</option>
+                            <option value="los-angeles">Los Angeles</option>
+                            <option value="houston">Houston</option>
+                            <option value="dallas">Dallas</option>
+                            <option value="seattle">Seattle</option>
+                            <option value="miami">Miami</option>
+                            <option value="boston">Boston</option>
+
+                        </select>
+
+                        <span id="customer-location-hint" class="form-hint">
+
+                            Select the customer location where this attribute is used.
+
+                        </span>
+
+                        <span id="customer-location-error" class="form-error" role="alert" aria-live="polite">
+                        </span>
+
+                    </div>
+                    <div class="form-group">
+
+                        <label for="company">
+                            Company
+                        </label>
+
+                        <select id="company" name="company" required
+                            aria-describedby="company-hint company-error">
+
+                            <option value="">
+                                Select Company
+                            </option>
+
+                            <option value="abc-corporation" selected>
+                                ABC Corporation
+                            </option>
+
+                            <option value="global-industries">
+                                Global Industries
+                            </option>
+
+                            <option value="xyz-limited">
+                                XYZ Limited
+                            </option>
+
+                            <option value="northwind-traders">
+                                Northwind Traders
+                            </option>
+
+                            <option value="contoso-ltd">
+                                Contoso Ltd
+                            </option>
+
+                        </select>
+
+                        <span id="company-hint" class="form-hint">
+
+                            Select the company associated with this attribute.
+
+                        </span>
+
+                        <span id="company-error" class="form-error" role="alert" aria-live="polite">
+                        </span>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <fieldset>
+
+                            <legend>
+                                Status
+                            </legend>
+
+                            <div class="radio-group">
+
+                                <input type="radio" id="status-active" name="isActive" value="active" checked required>
+
+                                <label for="status-active">
+                                    Active
+                                </label>
+
+                                <input type="radio" id="status-inactive" name="isActive" value="inactive"
+                                    aria-required="true">
+
+                                <label for="status-inactive">
+                                    Inactive
+                                </label>
+
+                            </div>
+
+                        </fieldset>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label for="created-on">
+                            Created On
+                        </label>
+
+                        <input type="date" id="created-on" name="createdOn" max="2026-07-14" value="2026-06-15" required
+                            aria-describedby="created-on-hint created-on-error">
+
+                        <span id="created-on-hint" class="form-hint">
+
+                            Select the date the attribute was created.
+
+                        </span>
+
+                        <span id="created-on-error" class="form-error" role="alert" aria-live="polite">
+                        </span>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label for="notes">
+                            Notes
+                        </label>
+
+                        <textarea id="notes" name="notes" rows="5" minlength="10" maxlength="500"
+                            aria-describedby="notes-hint notes-error"
+                            placeholder="Enter additional notes about the attribute">Used to classify products based on their display color.
+                        </textarea>
+
+                        <span id="notes-hint" class="form-hint">
+
+                            Provide any additional information about this attribute.
+
+                        </span>
+
+                        <span id="notes-error" class="form-error" role="alert" aria-live="polite">
+                        </span>
+
+                    </div>
+
+                </fieldset>
+
+                <div class="form-actions">
+
+                    <button type="submit" id="update-button">
+                        update Attribute
+                    </button>
+
+                    <button type="reset" id="reset-button">
+                        Reset
+                    </button>
+
+                </div>
+
+            </form>
+
+        </section>
+
+    </main>
+
+    <footer role="contentinfo">
+        <p>&copy; 2026 Attribute Management System</p>
+    </footer>
+
+</body>
+
+
+</html>

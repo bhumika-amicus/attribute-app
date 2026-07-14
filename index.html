@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Attribute Management | Attribute List</title>
+
+    <meta name="description" content="View and manage HTML attributes.">
+
+
+    <meta property="og:title" content="Attribute List">
+    <meta property="og:description" content="View and manage HTML attributes.">
+    <meta property="og:type" content="website">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://example.com/attribute-app/">
+
+    <!-- Favicons -->
+    <link rel="icon" href="assets/favicon.ico">
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+
+    <!-- Site stylesheet -->
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+<body>
+
+    <!-- Skip link for keyboard and screen reader users -->
+    <a href="#main-content" class="skip-link">
+        Skip to main content
+    </a>
+
+    <header role="banner">
+        <h1>Attribute Management</h1>
+
+        <nav role="navigation" aria-label="Primary">
+            <ul>
+                <li>
+                    <a href="index.html" aria-current="page">Attribute List</a>
+                </li>
+                <li>
+                    <a href="add-attribute.html">Add Attribute</a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <main id="main-content">
+
+        <!-- A <section> becomes a landmark only when it has an accessible name (using aria-labelledby or aria-label). This helps screen reader
+        users identify and navigate between different sections of the page. The skip link lets keyboard and screen reader users bypass repeated
+        navigation and jump directly to the main content . -->
+
+        <section id="filter-section" aria-labelledby="filter-heading">
+
+            <h2 id="filter-heading">Filter Attributes</h2>
+
+            <form id="filter-form" role="search" method="get" aria-label="Filter attributes">
+
+                <div>
+
+                    <label for="search">
+                        Search Attributes
+                    </label>
+
+                    <input type="search" id="search" name="search" inputmode="search" autocomplete="off"
+                        placeholder="Search by attribute name">
+
+                </div>
+
+                <div>
+
+                    <label for="business-unit">
+                        Business Unit
+                    </label>
+
+                    <select id="business-unit" name="business-unit">
+
+                        <option value="">All</option>
+                        <option value="hr">HR</option>
+                        <option value="finance">Finance</option>
+                        <option value="sales">Sales</option>
+
+                    </select>
+
+                </div>
+
+                <div>
+
+                    <label for="status">
+                        Status
+                    </label>
+
+                    <select id="status" name="status">
+
+                        <option value="">All</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+
+                    </select>
+
+                </div>
+
+                <button type="submit">
+                    Apply Filters
+                </button>
+
+            </form>
+
+            <!-- Will display search result count and status updates in A3 -->
+            <div id="results-status" aria-live="polite">
+            </div>
+
+        </section>
+
+        <section id="results-section" aria-labelledby="results-heading">
+
+            <h2 id="results-heading">
+                Attribute Results
+            </h2>
+
+            <table id="attribute-table">
+
+                <caption>
+                    List of application attributes with their business unit, customer location, company, status, and
+                    available actions.
+                </caption>
+
+                <thead>
+
+                    <tr>
+
+                        <th scope="col" aria-sort="none">
+                            Attribute Name
+                        </th>
+
+                        <th scope="col" aria-sort="none">
+                            Business Unit
+                        </th>
+
+                        <th scope="col" aria-sort="none">
+                            Customer Location
+                        </th>
+
+                        <th scope="col" aria-sort="none">
+                            Company
+                        </th>
+
+                        <th scope="col" aria-sort="none">
+                            Status
+                        </th>
+
+                        <th id="actions-header" scope="col">
+                            Actions
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <!--
+                Delete uses a POST form because it changes data.
+                GET requests should only retrieve data, not modify it.
+                Using POST helps prevent accidental or unsafe deletions.
+                -->
+
+                <tbody>
+
+                    <tr>
+
+                        <th scope="row" id="attr-color">
+                            Color
+                        </th>
+
+                        <td>Sales</td>
+
+                        <td>New York</td>
+
+                        <td>ABC Corporation</td>
+
+                        <td>
+                            <span class="status-active">Active</span>
+                        </td>
+
+                        <td headers="attr-color actions-header">
+
+                            <div class="action-buttons">
+
+                                <a class="edit-link" href="edit-attribute.html?id=color">
+                                    Edit
+                                </a>
+
+                                <form method="post" action="#" class="delete-form">
+
+                                    <button type="submit" class="delete-button" aria-label="Delete">
+                                        🗑️ <span class="sr-only">Delete</span>
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <th scope="row" id="attr-size">
+                            Size
+                        </th>
+
+                        <td>Retail</td>
+
+                        <td>Chicago</td>
+
+                        <td>ABC Corporation</td>
+
+                        <td>
+                            <span class="status-active">Active</span>
+                        </td>
+
+                        <td headers="attr-size actions-header">
+
+                            <div class="action-buttons">
+
+                                <a class="edit-link" href="edit-attribute.html?id=size">
+                                    Edit
+                                </a>
+
+                                <form method="post" action="#" class="delete-form">
+
+                                    <button type="submit" class="delete-button" aria-label="Delete">
+                                        🗑️ <span class="sr-only">Delete</span>
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <th scope="row" id="attr-brand">
+                            Brand
+                        </th>
+
+                        <td>Marketing</td>
+
+                        <td>Los Angeles</td>
+
+                        <td>Global Industries</td>
+
+                        <td>
+                            <span class="status-active">Active</span>
+                        </td>
+
+                        <td headers="attr-brand actions-header">
+
+                            <div class="action-buttons">
+
+                                <a class="edit-link" href="edit-attribute.html?id=brand">
+                                    Edit
+                                </a>
+
+                                <form method="post" action="#" class="delete-form">
+
+                                    <button type="submit" class="delete-button" aria-label="Delete">
+                                        🗑️ <span class="sr-only">Delete</span>
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <th scope="row" id="attr-material">
+                            Material
+                        </th>
+
+                        <td>Manufacturing</td>
+
+                        <td>Houston</td>
+
+                        <td>XYZ Limited</td>
+
+                        <td>
+                            <span class="status-active">Active</span>
+                        </td>
+
+                        <td headers="attr-material actions-header">
+
+                            <div class="action-buttons">
+
+                                <a class="edit-link" href="edit-attribute.html?id=material">
+                                    Edit
+                                </a>
+
+                                <form method="post" action="#" class="delete-form">
+
+                                    <button type="submit" class="delete-button" aria-label="Delete">
+                                        🗑️ <span class="sr-only">Delete</span>
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <th scope="row" id="attr-weight">
+                            Weight
+                        </th>
+
+                        <td>Logistics</td>
+
+                        <td>Dallas</td>
+
+                        <td>XYZ Limited</td>
+
+                        <td>
+                            <span class="status-inactive">Inactive</span>
+                        </td>
+
+                        <td headers="attr-weight actions-header">
+
+                            <div class="action-buttons">
+
+                                <a class="edit-link" href="edit-attribute.html?id=weight">
+                                    Edit
+                                </a>
+
+                                <form method="post" action="#" class="delete-form">
+
+                                    <button type="submit" class="delete-button" aria-label="Delete">
+                                        🗑️ <span class="sr-only">Delete</span>
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <th scope="row" id="attr-category">
+                            Category
+                        </th>
+
+                        <td>Product Management</td>
+
+                        <td>Seattle</td>
+
+                        <td>Northwind Traders</td>
+
+                        <td>
+                            <span class="status-active">Active</span>
+                        </td>
+
+                        <td headers="attr-category actions-header">
+
+                            <div class="action-buttons">
+
+                                <a class="edit-link" href="edit-attribute.html?id=category">
+                                    Edit
+                                </a>
+
+                                <form method="post" action="#" class="delete-form">
+
+                                    <button type="submit" class="delete-button" aria-label="Delete">
+                                        🗑️ <span class="sr-only">Delete</span>
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <th scope="row" id="attr-region">
+                            Region
+                        </th>
+
+                        <td>Operations</td>
+
+                        <td>Miami</td>
+
+                        <td>Northwind Traders</td>
+
+                        <td>
+                            <span class="status-inactive">Inactive</span>
+                        </td>
+
+                        <td headers="attr-region actions-header">
+
+                            <div class="action-buttons">
+
+                                <a class="edit-link" href="edit-attribute.html?id=region">
+                                    Edit
+                                </a>
+
+                                <form method="post" action="#" class="delete-form">
+
+                                    <button type="submit" class="delete-button" aria-label="Delete">
+                                        🗑️ <span class="sr-only">Delete</span>
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <th scope="row" id="attr-department">
+                            Department
+                        </th>
+
+                        <td>Human Resources</td>
+
+                        <td>Boston</td>
+
+                        <td>Contoso Ltd</td>
+
+                        <td>
+                            <span class="status-active">Active</span>
+                        </td>
+
+                        <td headers="attr-department actions-header">
+
+                            <div class="action-buttons">
+
+                                <a class="edit-link" href="edit-attribute.html?id=department">
+                                    Edit
+                                </a>
+
+                                <form action="#" method="post" class="delete-form">
+
+                                    <button type="submit" class="delete-button" aria-label="Delete">
+                                        🗑️ <span class="sr-only">Delete</span>
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </section>
+
+    </main>
+
+    <aside id="quick-stats" aria-label="Quick Stats">
+
+        <h2>Quick Stats</h2>
+
+        <p>Total Attributes: 8</p>
+
+        <p>Active: 6</p>
+
+        <p>Inactive: 2</p>
+
+    </aside>
+
+    <footer role="contentinfo">
+
+        <p>&copy; 2026 Attribute Management System</p>
+
+    </footer>
+
+</body>
+
+</html>
