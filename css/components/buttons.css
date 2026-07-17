@@ -42,6 +42,10 @@ button[type="button"] {
   user-select: none;
 }
 
+#submit-btn {
+  margin-top: 1rem;
+}
+
 /* Compositor-friendly transitions wrapped in prefers-reduced-motion */
 @media (prefers-reduced-motion: no-preference) {
   .btn,
@@ -139,7 +143,7 @@ button[type="reset"]:not(.btn--primary):not(.btn--danger):hover:not(:disabled) {
 
 /* Icon Button (.btn--icon) — square 44px × 44px button */
 .btn--icon {
-  
+
   height: 44px;
   min-width: 44px;
   min-height: 44px;
