@@ -43,6 +43,7 @@ legend {
   display: flex;
   flex-direction: column;
   margin-block-end: var(--space-2);
+  
 }
 
 /* 3. Form Labels */

@@ -1,4 +1,63 @@
-/* css/pages.css */
-/* Page-specific overrides (last in cascade) */
+/* ==========================================================
+   Task 10 - Specificity Drill
+   ========================================================== 
+.btn {
+    background: blue;
+}
 
-/* Specificity Debug Drill (Task 10 will be verified here) */
+button.btn {
+    background: green;
+}
+
+#submit-btn {
+    background: red;
+}
+
+:where(.btn) {
+    background: pink;
+}
+
+:is(.btn) {
+    background: teal;
+}
+
+.btn {
+    background: orange !important;
+}
+
+*/
+/* ===========================
+   Bug A - Absolute Position
+===========================
+
+.toast-container {
+  padding: 2rem;
+  border: 2px dashed #999;
+}
+
+.toast {
+  position: relative;
+  top: 0;
+  right: 0;
+  padding: 1rem;
+  background: #facc15;
+}
+
+/* ===========================
+   Bug b - Absolute Position
+=========================== 
+
+.box {
+  width: 200px;
+  height: 100px;
+}
+
+.box-red {
+  background: crimson;
+  margin-bottom: -40px;
+}
+
+.box-blue {
+  background: steelblue;
+   position: relative;
+  z-index: 999; /* No effect */

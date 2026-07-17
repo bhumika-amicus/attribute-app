@@ -430,3 +430,220 @@ They are cheap because `transform` and `opacity` do **not** trigger DOM reflow o
 `@media (prefers-reduced-motion: reduce)` detects whether a user has enabled **"Reduce Motion"** or **"Remove Animations"** inside their operating system accessibility settings (Windows, macOS, iOS, or Android).
 - **The WCAG Criteria Behind It:** It honors **WCAG Success Criterion 2.3.3 (Animation from Interactions - Level AAA)** and **WCAG 2.2.2 (Pause, Stop, Hide - Level A)**.
 - **The Medical Rationale:** Many users suffer from **vestibular disorders, inner ear conditions, epilepsy, or chronic migraines**. When UI elements rapidly slide, zoom, or bounce across the screen, it can trigger physical dizziness, vertigo, nausea, or seizures. Therefore, wrapping all transitions in `@media (prefers-reduced-motion: no-preference)` and providing zeroed fallbacks (`transform: none`) is a vital accessibility mandate.
+
+
+## Task 10 – CSS Specificity Drill
+
+CSS specificity determines which selector wins when multiple rules target the same element. It is represented as a four-part value:
+
+| Component | Represents | Example |
+|-----------|------------|---------|
+| **a** | Inline styles | `style="color: red;"` |
+| **b** | ID selectors | `#submit-btn` |
+| **c** | Classes, attributes, and pseudo-classes | `.btn`, `[disabled]`, `:hover`, `:is()` |
+| **d** | Element selectors and pseudo-elements | `button`, `h1`, `::before` |
+
+To understand how the CSS cascade determines the final applied style, the following rules were added in the given order:
+
+```css
+.btn {
+    background: blue;
+}
+
+button.btn {
+    background: green;
+}
+
+#submit-btn {
+    background: red;
+}
+
+:where(.btn) {
+    background: pink;
+}
+
+:is(.btn) {
+    background: teal;
+}
+
+.btn {
+    background: orange !important;
+}
+```
+
+The HTML used for testing was:
+
+```html
+<button
+    id="submit-btn"
+    class="btn"
+    style="background: yellow;">
+    Apply Filters
+</button>
+```
+
+### Specificity Scores
+
+| CSS Rule | Specificity (a,b,c,d) | Notes |
+|----------|-----------------------|-------|
+| `.btn` | **(0,0,1,0)** | One class selector |
+| `button.btn` | **(0,0,1,1)** | One element + one class |
+| `#submit-btn` | **(0,1,0,0)** | One ID selector |
+| `:where(.btn)` | **(0,0,0,0)** | `:where()` always has zero specificity |
+| `:is(.btn)` | **(0,0,1,0)** | Takes the specificity of `.btn` |
+| `.btn { background: orange !important; }` | **(0,0,1,0)** + `!important` | `!important` changes declaration priority, not specificity |
+| `style="background: yellow;"` | **(1,0,0,0)** | Inline style |
+| `style="background: yellow !important;"` | **(1,0,0,0)** + `!important` | Inline style with highest author priority |
+
+---
+
+### Prediction and Verification
+
+#### Scenario 1 – Normal Inline Style
+
+```html
+style="background: yellow;"
+```
+
+**Predicted colour:** Orange
+
+**Verified colour:** Orange ✅
+
+**Reason:**
+
+- The inline style is a **normal declaration**.
+- The stylesheet rule uses `!important`.
+- `!important` declarations override all normal author declarations, including inline styles.
+
+---
+
+#### Scenario 2 – Inline `!important`
+
+```html
+style="background: yellow !important;"
+```
+
+**Predicted colour:** Yellow
+
+**Reason:**
+
+- Both declarations are marked `!important`.
+- When importance is equal, the browser compares specificity.
+- The inline style has specificity **(1,0,0,0)**, which is higher than `.btn` **(0,0,1,0)**.
+- Therefore, the inline `!important` style wins.
+
+---
+
+### `:where()`
+
+The `:where()` pseudo-class always has **zero specificity** `(0,0,0,0)`, regardless of the selector inside it.
+
+This makes it ideal for writing base styles that should remain easy to override later.
+
+---
+
+### `:is()`
+
+The `:is()` pseudo-class takes the **highest specificity of the selectors passed into it**.
+
+Example:
+
+```css
+:is(.btn)
+```
+
+Since `.btn` has specificity **(0,0,1,0)**, `:is(.btn)` also has specificity **(0,0,1,0)**.
+
+---
+
+### Where does an `!important` inline style fall?
+
+An inline `!important` declaration combines:
+
+- Inline specificity **(1,0,0,0)**
+- `!important` priority
+
+This makes it one of the strongest author-origin declarations.
+
+It can only be overridden by another applicable `!important` declaration with higher precedence in the CSS cascade (for example, certain user-origin `!important` styles used for accessibility).
+
+---
+
+### Production Rule
+
+After completing this exercise, my takeaway is:
+
+> Avoid using `!important` in production code whenever possible. A well-structured CSS architecture with proper cascade order and low-specificity selectors is easier to maintain. `!important` should be reserved for exceptional situations, such as utility classes or overriding unavoidable third-party CSS.
+
+
+### 11.1 Elements → Styles Panel
+
+The **Styles** panel displays every CSS rule that matches the selected element. It also shows the complete CSS cascade, allowing me to see which rule is applied and which rules are overridden.
+
+For this exercise, I inspected the **Apply Filters** button used in Task 10.
+
+The inline style normally has the highest specificity `(1,0,0,0)`, but it is a **normal declaration**. The stylesheet rule using `!important` takes precedence over all normal declarations, including the inline style, resulting in the button being rendered with an orange background.
+
+**Screenshot:** ![Styles panel](assets/devtools/styles-panel.png)
+
+### 11.2 Elements → Computed Panel
+
+I inspected the **"Filter Attributes" (`<h2>`)** heading.
+
+The **Styles** panel showed the original CSS rule:
+
+![style panel differnce](assets/devtools/style-panel-diff-computed%20(1).png)
+
+The **Computed** panel showed the final resolved value:
+
+- `margin-block-start: 0px`
+- `margin-block-end: 12px`
+
+This demonstrates that the Computed panel resolves CSS variables and displays the actual values used by the browser after the CSS cascade has been applied.
+
+**Difference:**
+- **Styles:** Shows all matching CSS rules and where they come from.
+- **Computed:** Shows only the final value applied to the element.
+
+![Style computed difeernce](assets/devtools/style-panel-diff-computed%20(2).png)
+
+### 11.3 Layout Panel (Grid & Flex Overlays)
+
+The **Layout** panel in Chrome DevTools was used to visualize the page layout and inspect both CSS Grid and Flexbox.
+
+- **Grid Overlay:** Inspected the `body` element, which uses **CSS Grid**. The overlay displayed the grid structure, including rows, columns, and grid gaps, making it easier to understand the overall page layout.
+- **Flex Overlay:** Inspected the `#main-content` element, which uses **Flexbox** (`display: flex; flex-direction: column;`). The overlay showed the vertical main axis and how child elements are stacked and spaced within the container.
+
+These overlays are useful for debugging layouts and verifying that Grid and Flexbox behave as expected.
+
+**Screenshots:**
+![grid](assets/devtools/grid_1.png)
+![grid](assets/devtools/grid_2.png)
+
+
+
+### 11.4 Coverage Tab
+
+The **Coverage** tab was used to measure how much of the project's CSS was executed while interacting with the page.
+
+I only covered one page sp , the report showed that several CSS files had unused rules during the recording. For example:
+![coverage](assets/devtools/coverage.png)
+
+### 11.5 Rendering Panel – Emulate `prefers-reduced-motion`
+
+Using the **Rendering** panel, I enabled **Emulate CSS `prefers-reduced-motion`** to verify that motion-sensitive users receive a reduced-motion experience.
+
+The page correctly respected the user's motion preference by disabling transitions, confirming that the reduced-motion media query was working as expected.
+
+---
+
+### 11.6 Lighthouse Audit
+
+A Lighthouse audit was run on all three pages using the following categories:
+
+![edit-attribute](assets/devtools/add-attribute-lighthouse.png)
+![edit-attribute](assets/devtools/edit-lighthouse.png)
+![index-attribute](assets/devtools/index-html-lighthouse.png)
+
+All pages achieved the target scores.
+
