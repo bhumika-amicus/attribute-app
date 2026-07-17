@@ -1,0 +1,56 @@
+/* css/reset.css */
+
+/* Box sizing rules across all elements */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Remove default margins */
+body,
+h1,
+h2,
+h3,
+h4,
+p,
+figure,
+blockquote,
+dl,
+dd {
+  margin: 0;
+}
+
+/* Base Body Configuration */
+body {
+  min-height: 100vh;
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  color: var(--text-main);
+  background-color: var(--bg-page);
+  text-rendering: optimizeSpeed;
+}
+
+/* Responsive Image baseline */
+img,
+picture {
+  max-width: 100%;
+  display: block;
+}
+
+/* Inherit typography fonts for form controls */
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+/* Remove list styling on lists with a class */
+ul[class],
+ol[class] {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}

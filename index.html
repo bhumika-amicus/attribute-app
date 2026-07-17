@@ -24,7 +24,7 @@
     <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 
     <!-- Site stylesheet -->
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/main.css">
 
 </head>
 
@@ -35,20 +35,21 @@
         Skip to main content
     </a>
 
-    <header role="banner">
-        <h1>Attribute Management</h1>
-
-        <nav role="navigation" aria-label="Primary">
-            <ul>
-                <li>
-                    <a href="index.html" aria-current="page">Attribute List</a>
-                </li>
-                <li>
-                    <a href="add-attribute.html">Add Attribute</a>
-                </li>
-            </ul>
-        </nav>
+    <header role="banner" class="site-header">
+        <h1 class="site-header__title">Attribute Management</h1>
     </header>
+
+    <nav class="site-nav" role="navigation" aria-label="Primary">
+        <ul class="site-nav__list">
+            <li class="site-nav__item">
+                <a href="index.html" class="site-nav__link site-nav__link--active" aria-current="page">Attribute
+                    List</a>
+            </li>
+            <li class="site-nav__item">
+                <a href="add-attribute.html" class="site-nav__link">Add Attribute</a>
+            </li>
+        </ul>
+    </nav>
 
     <main id="main-content">
 
@@ -113,8 +114,8 @@
             </form>
 
             <!-- Will display search result count and status updates in A3 -->
-            <div id="results-status" aria-live="polite">
-            </div>
+            <!--<div id="results-status" aria-live="polite">
+            </div>-->
 
         </section>
 
@@ -173,31 +174,32 @@
 
                     <tr>
 
-                        <th scope="row" id="attr-color">
+                        <th scope="row" id="attr-color" class="attribute-card__title">
                             Color
                         </th>
 
-                        <td>Sales</td>
+                        <td data-label="Business Unit">Sales</td>
 
-                        <td>New York</td>
+                        <td data-label="Customer Location">New York</td>
 
-                        <td>ABC Corporation</td>
+                        <td data-label="Company">ABC Corporation</td>
 
-                        <td>
-                            <span class="status-active">Active</span>
+                        <td data-label="Status">
+                            <span class="badge badge--active status-active">Active</span>
                         </td>
 
-                        <td headers="attr-color actions-header">
+                        <td data-label="Actions" headers="attr-color actions-header">
 
-                            <div class="action-buttons">
+                            <div class="action-buttons cluster">
 
-                                <a class="edit-link" href="edit-attribute.html?id=color">
+                                <a class="btn btn--ghost edit-link" href="edit-attribute.html?id=color">
                                     Edit
                                 </a>
 
                                 <form method="post" action="#" class="delete-form">
 
-                                    <button type="submit" class="delete-button" aria-label="Delete">
+                                    <button type="submit" class="btn btn--danger btn--icon delete-button"
+                                        aria-label="Delete">
                                         🗑️ <span class="sr-only">Delete</span>
                                     </button>
 
@@ -211,31 +213,32 @@
 
                     <tr>
 
-                        <th scope="row" id="attr-size">
+                        <th scope="row" id="attr-size" class="attribute-card__title">
                             Size
                         </th>
 
-                        <td>Retail</td>
+                        <td data-label="Business Unit">Retail</td>
 
-                        <td>Chicago</td>
+                        <td data-label="Customer Location">Chicago</td>
 
-                        <td>ABC Corporation</td>
+                        <td data-label="Company">ABC Corporation</td>
 
-                        <td>
-                            <span class="status-active">Active</span>
+                        <td data-label="Status">
+                            <span class="badge badge--active status-active">Active</span>
                         </td>
 
-                        <td headers="attr-size actions-header">
+                        <td data-label="Actions" headers="attr-size actions-header">
 
-                            <div class="action-buttons">
+                            <div class="action-buttons cluster">
 
-                                <a class="edit-link" href="edit-attribute.html?id=size">
+                                <a class="btn btn--ghost edit-link" href="edit-attribute.html?id=size">
                                     Edit
                                 </a>
 
                                 <form method="post" action="#" class="delete-form">
 
-                                    <button type="submit" class="delete-button" aria-label="Delete">
+                                    <button type="submit" class="btn btn--danger btn--icon delete-button"
+                                        aria-label="Delete">
                                         🗑️ <span class="sr-only">Delete</span>
                                     </button>
 
@@ -249,31 +252,32 @@
 
                     <tr>
 
-                        <th scope="row" id="attr-brand">
+                        <th scope="row" id="attr-brand" class="attribute-card__title">
                             Brand
                         </th>
 
-                        <td>Marketing</td>
+                        <td data-label="Business Unit">Marketing</td>
 
-                        <td>Los Angeles</td>
+                        <td data-label="Customer Location">Los Angeles</td>
 
-                        <td>Global Industries</td>
+                        <td data-label="Company">Global Industries</td>
 
-                        <td>
-                            <span class="status-active">Active</span>
+                        <td data-label="Status">
+                            <span class="badge badge--active status-active">Active</span>
                         </td>
 
-                        <td headers="attr-brand actions-header">
+                        <td data-label="Actions" headers="attr-brand actions-header">
 
-                            <div class="action-buttons">
+                            <div class="action-buttons cluster">
 
-                                <a class="edit-link" href="edit-attribute.html?id=brand">
+                                <a class="btn btn--ghost edit-link" href="edit-attribute.html?id=brand">
                                     Edit
                                 </a>
 
                                 <form method="post" action="#" class="delete-form">
 
-                                    <button type="submit" class="delete-button" aria-label="Delete">
+                                    <button type="submit" class="btn btn--danger btn--icon delete-button"
+                                        aria-label="Delete">
                                         🗑️ <span class="sr-only">Delete</span>
                                     </button>
 
@@ -287,31 +291,32 @@
 
                     <tr>
 
-                        <th scope="row" id="attr-material">
+                        <th scope="row" id="attr-material" class="attribute-card__title">
                             Material
                         </th>
 
-                        <td>Manufacturing</td>
+                        <td data-label="Business Unit">Manufacturing</td>
 
-                        <td>Houston</td>
+                        <td data-label="Customer Location">Houston</td>
 
-                        <td>XYZ Limited</td>
+                        <td data-label="Company">XYZ Limited</td>
 
-                        <td>
-                            <span class="status-active">Active</span>
+                        <td data-label="Status">
+                            <span class="badge badge--active status-active">Active</span>
                         </td>
 
-                        <td headers="attr-material actions-header">
+                        <td data-label="Actions" headers="attr-material actions-header">
 
-                            <div class="action-buttons">
+                            <div class="action-buttons cluster">
 
-                                <a class="edit-link" href="edit-attribute.html?id=material">
+                                <a class="btn btn--ghost edit-link" href="edit-attribute.html?id=material">
                                     Edit
                                 </a>
 
                                 <form method="post" action="#" class="delete-form">
 
-                                    <button type="submit" class="delete-button" aria-label="Delete">
+                                    <button type="submit" class="btn btn--danger btn--icon delete-button"
+                                        aria-label="Delete">
                                         🗑️ <span class="sr-only">Delete</span>
                                     </button>
 
@@ -325,31 +330,32 @@
 
                     <tr>
 
-                        <th scope="row" id="attr-weight">
+                        <th scope="row" id="attr-weight" class="attribute-card__title">
                             Weight
                         </th>
 
-                        <td>Logistics</td>
+                        <td data-label="Business Unit">Logistics</td>
 
-                        <td>Dallas</td>
+                        <td data-label="Customer Location">Dallas</td>
 
-                        <td>XYZ Limited</td>
+                        <td data-label="Company">XYZ Limited</td>
 
-                        <td>
-                            <span class="status-inactive">Inactive</span>
+                        <td data-label="Status">
+                            <span class="badge badge--inactive status-inactive">Inactive</span>
                         </td>
 
-                        <td headers="attr-weight actions-header">
+                        <td data-label="Actions" headers="attr-weight actions-header">
 
-                            <div class="action-buttons">
+                            <div class="action-buttons cluster">
 
-                                <a class="edit-link" href="edit-attribute.html?id=weight">
+                                <a class="btn btn--ghost edit-link" href="edit-attribute.html?id=weight">
                                     Edit
                                 </a>
 
                                 <form method="post" action="#" class="delete-form">
 
-                                    <button type="submit" class="delete-button" aria-label="Delete">
+                                    <button type="submit" class="btn btn--danger btn--icon delete-button"
+                                        aria-label="Delete">
                                         🗑️ <span class="sr-only">Delete</span>
                                     </button>
 
@@ -363,31 +369,32 @@
 
                     <tr>
 
-                        <th scope="row" id="attr-category">
+                        <th scope="row" id="attr-category" class="attribute-card__title">
                             Category
                         </th>
 
-                        <td>Product Management</td>
+                        <td data-label="Business Unit">Product Management</td>
 
-                        <td>Seattle</td>
+                        <td data-label="Customer Location">Seattle</td>
 
-                        <td>Northwind Traders</td>
+                        <td data-label="Company">Northwind Traders</td>
 
-                        <td>
-                            <span class="status-active">Active</span>
+                        <td data-label="Status">
+                            <span class="badge badge--active status-active">Active</span>
                         </td>
 
-                        <td headers="attr-category actions-header">
+                        <td data-label="Actions" headers="attr-category actions-header">
 
-                            <div class="action-buttons">
+                            <div class="action-buttons cluster">
 
-                                <a class="edit-link" href="edit-attribute.html?id=category">
+                                <a class="btn btn--ghost edit-link" href="edit-attribute.html?id=category">
                                     Edit
                                 </a>
 
                                 <form method="post" action="#" class="delete-form">
 
-                                    <button type="submit" class="delete-button" aria-label="Delete">
+                                    <button type="submit" class="btn btn--danger btn--icon delete-button"
+                                        aria-label="Delete">
                                         🗑️ <span class="sr-only">Delete</span>
                                     </button>
 
@@ -401,31 +408,32 @@
 
                     <tr>
 
-                        <th scope="row" id="attr-region">
+                        <th scope="row" id="attr-region" class="attribute-card__title">
                             Region
                         </th>
 
-                        <td>Operations</td>
+                        <td data-label="Business Unit">Operations</td>
 
-                        <td>Miami</td>
+                        <td data-label="Customer Location">Miami</td>
 
-                        <td>Northwind Traders</td>
+                        <td data-label="Company">Northwind Traders</td>
 
-                        <td>
-                            <span class="status-inactive">Inactive</span>
+                        <td data-label="Status">
+                            <span class="badge badge--inactive status-inactive">Inactive</span>
                         </td>
 
-                        <td headers="attr-region actions-header">
+                        <td data-label="Actions" headers="attr-region actions-header">
 
-                            <div class="action-buttons">
+                            <div class="action-buttons cluster">
 
-                                <a class="edit-link" href="edit-attribute.html?id=region">
+                                <a class="btn btn--ghost edit-link" href="edit-attribute.html?id=region">
                                     Edit
                                 </a>
 
                                 <form method="post" action="#" class="delete-form">
 
-                                    <button type="submit" class="delete-button" aria-label="Delete">
+                                    <button type="submit" class="btn btn--danger btn--icon delete-button"
+                                        aria-label="Delete">
                                         🗑️ <span class="sr-only">Delete</span>
                                     </button>
 
@@ -439,31 +447,32 @@
 
                     <tr>
 
-                        <th scope="row" id="attr-department">
+                        <th scope="row" id="attr-department" class="attribute-card__title">
                             Department
                         </th>
 
-                        <td>Human Resources</td>
+                        <td data-label="Business Unit">Human Resources</td>
 
-                        <td>Boston</td>
+                        <td data-label="Customer Location">Boston</td>
 
-                        <td>Contoso Ltd</td>
+                        <td data-label="Company">Contoso Ltd</td>
 
-                        <td>
-                            <span class="status-active">Active</span>
+                        <td data-label="Status">
+                            <span class="badge badge--active status-active">Active</span>
                         </td>
 
-                        <td headers="attr-department actions-header">
+                        <td data-label="Actions" headers="attr-department actions-header">
 
-                            <div class="action-buttons">
+                            <div class="action-buttons cluster">
 
-                                <a class="edit-link" href="edit-attribute.html?id=department">
+                                <a class="btn btn--ghost edit-link" href="edit-attribute.html?id=department">
                                     Edit
                                 </a>
 
                                 <form action="#" method="post" class="delete-form">
 
-                                    <button type="submit" class="delete-button" aria-label="Delete">
+                                    <button type="submit" class="btn btn--danger btn--icon delete-button"
+                                        aria-label="Delete">
                                         🗑️ <span class="sr-only">Delete</span>
                                     </button>
 
@@ -478,6 +487,27 @@
                 </tbody>
 
             </table>
+
+            <!-- Accessible Pagination Controls using BEM .pagination classes (`cards.css`) -->
+            <nav aria-label="Attribute pagination" class="pagination-wrapper">
+                <ul class="pagination">
+                    <li class="pagination__item">
+                        <button type="button" class="pagination__button" disabled aria-label="Previous page">←
+                            Prev</button>
+                    </li>
+                    <li class="pagination__item">
+                        <a href="index.html" class="pagination__link pagination__link--active" aria-current="page"
+                            aria-label="Page 1 (Dashboard)">1</a>
+                    </li>
+                    <li class="pagination__item">
+                        <a href="add-attribute.html" class="pagination__link" aria-label="Page 2 (Add Attribute)">2</a>
+                    </li>
+                    <li class="pagination__item">
+                        <a href="add-attribute.html" class="pagination__link"
+                            aria-label="Next page (Add Attribute)">Next →</a>
+                    </li>
+                </ul>
+            </nav>
 
         </section>
 

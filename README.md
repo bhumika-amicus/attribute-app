@@ -291,4 +291,142 @@ Lighthouse reported the warning **"Touch targets do not have sufficient size or 
 ![lighthouse-obs](assets/image-5.png)
 
 
+# Day 2 CSS
 
+## Assignment 2 — Task Documentation
+
+### Task 1: CSS Architecture & @layer Strategy
+- **File Architecture:** Structured stylesheets into a modular directory (`css/tokens.css`, `css/reset.css`, `css/base.css`, `css/layout.css`, `css/utilities.css`, `css/pages.css`, and `css/components/*.css`) imported into `css/main.css`.
+- **Cascade Layers:** Declared layer priority `@layer reset, tokens, base, layout, components, utilities, pages;`.
+
+#### What problem does `@layer` solve over plain link order?
+Cascade layers decouple priority from selector specificity (`a,b,c`) and file loading order. Without `@layer`, if a base reset or utility stylesheet accidentally has a higher specificity selector (such as an ID or chained classes), overriding it in a later component file requires artificially increasing specificity or resorting to `!important`. With `@layer`, any CSS rule defined in a higher-priority layer (`components`) automatically wins over rules in lower-priority layers (`reset` or `base`), even if the lower layer has higher selector specificity.
+
+#### Why are `@layers` harder for someone NOT using them to override later?
+In the CSS cascade specification, **unlayered CSS (`styles not inside any @layer block`) automatically has higher priority than ALL styles defined inside any `@layer`**. If a developer builds their application entirely inside `@layer` blocks and later a third-party script or developer injects normal unlayered CSS, those unlayered rules immediately override all layered rules regardless of specificity. Conversely, if an external developer tries to override existing unlayered CSS by placing their custom code inside a `@layer`, their overrides will fail because any unlayered rule always defeats layered rules.
+
+#### When is plain link order still preferable?
+Plain link order is preferable in simpler projects without complex overrides, or when integrating with legacy codebases and third-party libraries (like Bootstrap or old UI widgets) that rely heavily on selector specificity and unlayered cascades. Wrapping legacy frameworks inside `@layer` can unexpectedly invert specificity hierarchy and break their built-in overrides.
+
+---
+
+### Task 2: Design System & Dark Mode Architecture
+- **Tokens Implemented:** Defined centralized CSS custom properties on `:root` for color primitives (`--color-bg`, `--color-primary`), semantic feedback (`--color-danger`, `--color-success`, `--color-focus-ring`), fluid spacing (`--space-1` to `--space-6` in `rem`), fluid typography (`clamp()` on `--fs-xl` and `--fs-2xl`), border radii (`--radius-sm`, `--radius-md`, `--radius-pill`), shadows (`--shadow-1`, `--shadow-2`), and stacking (`--z-toast`, `--z-skip-link`).
+- **Dark Mode Strategy:** Implemented dark mode theme overrides using `[data-theme="dark"]`. By changing semantic color variables under this attribute selector, the application switches themes dynamically without modifying component stylesheets.
+
+#### Why are CSS variables superior to Sass variables for runtime theming and `prefers-color-scheme`?
+CSS custom properties (`--color-bg`) exist live in the browser's DOM tree at runtime. When the theme attribute (`[data-theme="dark"]`) or system preference (`prefers-color-scheme: dark`) changes, the browser instantly re-evaluates and repaints elements using those variables. Sass variables (`$color-bg`) are preprocessed and compiled away into static hex or rgb strings (`#ffffff`) at build time. To switch themes using Sass variables, a developer would have to duplicate every single component selector (`.dark-theme .card { background: #121212; }`), doubling or tripling CSS payload size and requiring full class toggling across all components.
+
+#### When would Sass variables still beat CSS variables?
+Sass variables are superior when performing compile-time calculations, loops (`@for`), map data structures, or static mathematical and color manipulation functions (`darken($base, 10%)`, `lighten()`, `color.adjust()`). If values are static constants across all themes and devices, Sass variables avoid adding hundreds of custom property lookups to the browser's runtime CSS Object Model (CSSOM).
+
+---
+
+### Task 3: Modern Reset & BEM Naming Convention
+- **Modern Reset (`reset.css`):** Applied global `box-sizing: border-box` across all elements, normalized heading and paragraph margins (`margin: 0`), made responsive images default (`max-width: 100%; display: block;`), and standardized form control typography (`font: inherit`).
+
+#### BEM Naming Convention & Specificity Flatness
+To maintain long-term maintainability without `!important`, all components follow the **BEM (`Block__Element--Modifier`)** naming convention (e.g., `.attribute-card`, `.attribute-card__title`, `.attribute-card--inactive`). BEM enforces **flat specificity**, where every component style has an identical specificity score of exactly one class `(0,1,0)`. Without a strict convention like BEM, developers often chain selectors (`.card .content h3.active`), causing specificity inflation (`(0,2,1)`). When another developer needs to override that style later, they must chain even more selectors or use `!important`, setting off a cascading specificity war where stylesheets grow unmaintainable and unpredictable.
+
+---
+
+### Task 4: Base & Typography (`base.css`)
+- **Implemented Rules:** Added logical properties (`margin-inline`, `padding-block`, `margin-block-end`) for internationalization (i18n / RTL readiness), `:target { scroll-margin-top: var(--space-5); }` for anchor link jumps above sticky headers, `.sr-only` accessibility utility, and `::selection` background styling.
+
+#### Why is `outline: none` without a replacement a WCAG failure?
+Removing the default focus outline (`outline: none`) without providing a visible focus indicator violates **WCAG 2.1 Criterion 2.4.7 (Focus Visible)**. Keyboard-only users and screen-reader users relying on keyboard tabbing (`Tab` / `Shift+Tab`) cannot see which interactive element currently has focus on the webpage. Without a visible ring, navigation becomes completely blind and unusable.
+
+#### What does `:focus-visible` give you that `:focus` does not?
+The traditional `:focus` pseudo-class triggers *whenever* an element receives focus, including when a mouse user clicks a button (`<button>`). Many designers historically removed `:focus` outlines because mouse users complained about unsightly blue rings after clicking buttons. **`:focus-visible` discriminates between input modalities:** the browser uses heuristics to show the focus ring *only* when the user is navigating via keyboard (`Tab` keys) or assistive devices, while hiding it when a mouse or touch user clicks an element. This satisfies both visual aesthetics and WCAG accessibility compliance.
+
+---
+
+### Task 5: Mobile-First Page Layout Grid (`layout.css`)
+- **Implemented Rules:** Built responsive page chrome using CSS Grid (`grid-template-areas`) with mobile-first `em`-based breakpoints (`48em` for tablet $\ge 768px$ and `64em` for desktop $\ge 1024px$).
+
+#### Why Mobile-First? What bug does Desktop-First introduce?
+Mobile-first styling sets single-column flow as the natural default (`body { display: grid; grid-template-columns: minmax(0, 1fr); }`) without requiring a media query. This avoids the classic "desktop-first bug" where multi-column grid templates, explicit column widths, and large desktop margins must be aggressively overridden or reset (`width: 100%`, `grid-template-columns: 1fr`) on small screens. When overriding complex desktop layouts for mobile, developers frequently encounter specificity wars and overflow bugs that cause horizontal scrollbars on mobile phones. Mobile-first ensures small screens only process baseline styling while larger screens opt into multi-column complexity via `min-width` media queries.
+
+#### Why use `em`-based media queries instead of `px`?
+Media queries defined in `em` units (`min-width: 48em`) respect the user's browser font-size scaling preferences. If a user with low vision increases their browser's default font size from `16px` to `24px`, a pixel breakpoint (`min-width: 768px`) remains static at `768px`, causing large text to cram into narrow layout columns or overflow boundaries. An `em` breakpoint (`48em` = `48 * 16px = 768px`) dynamically scales up with the user's base font size (`48 * 24px = 1152px`), ensuring the layout only shifts to a multi-column grid when there is genuine physical screen space to accommodate `48` characters of their zoomed-in text.
+
+#### Why use `grid-template-areas` over named grid lines?
+For page-level structural layouts ("page chrome"), `grid-template-areas` provides a self-documenting ASCII visual map of the exact document layout directly in CSS (`"header header header" / "nav main aside" / "footer footer footer"`). Using chains of numeric grid line coordinates (`grid-column: 1 / 4; grid-row: 2 / 3;`) makes layout relationships opaque and prone to breaking during refactoring. With `grid-template-areas`, moving a sidebar from the right column to the left requires editing only a single string matrix without modifying the individual component styles.
+
+---
+
+### Task 6: Container Queries (`@container`) for Attribute Cards
+- **Implemented Rules:** Added `container-type: inline-size; container-name: attribute-list;` to the table/card wrapper (`tbody` / `#results-section`). Inside `@container attribute-list (max-width: 320px)`, the card collapses down to a compact 1-line summary displaying only the Attribute Name header and Status/Action badges (`td:not(:last-child):not(:nth-last-child(2)) { display: none; }`).
+
+#### When does a Container Query (`@container`) beat a Media Query (`@media`)?
+A Media Query (`@media (max-width: 48em)`) only inspects the total physical width of the **browser window viewport**. If a component is placed inside a narrow sidebar (`280px` wide) while the desktop browser window itself is wide (`1920px`), a Media Query will fail to trigger, forcing the component to stay in wide/multi-column mode and overflow its container.
+**Component Example where `@media` fails:** An **Attribute Card (`.attribute-card`)** placed inside the right-hand **Quick Stats sidebar (`#quick-stats`)** vs the **Main Column (`#main-content`)**. In a wide browser (`1400px`), the main column has `900px` of space while the sidebar only has `280px`. A Media Query cannot style the sidebar card differently from the main column card because the viewport width is identical for both (`1400px`). A Container Query (`@container (max-width: 320px)`) measures the *parent box's width* (`280px`), cleanly collapsing the sidebar card into a compact 1-line layout while letting the main column card display in full detail.
+
+---
+
+### Task 7: Responsive Table Strategies without JS (`table.css`)
+- **Implemented Rules:** Styled the desktop `<table>` with zebra striping (`tbody tr:nth-child(even)`), hover highlighting, sticky column headers (`th { position: sticky; top: 0; }`), right-alignment for Actions, focus-visible indication on rows (`tbody tr:focus-within`), and sort arrows driven purely by `[aria-sort]` selectors via `::after`. On mobile (`< 48em`), transformed `<tr>` elements into elevated cards using pure CSS (`display: block`) and `data-label` injection (`td::before { content: attr(data-label); }`).
+
+#### Why is `data-label`/`::before` better than maintaining duplicate mobile/desktop markup?
+Maintaining two separate HTML blocks (`<table class="desktop-only">` alongside `<div class="mobile-cards">`) forces developers to duplicate every piece of data in the DOM (`100% markup duplication`). When data changes dynamically or through pagination, both copies must be kept synchronized, which increases memory footprint and introduces bugs where one view updates while the other does not. Furthermore, having duplicate interactive buttons (edit/delete forms inside both desktop table cells and mobile card divs) creates duplicate tab stops for keyboard users and confusing duplicate announcements for screen readers. Using `data-label="..."` on table cells combined with `td::before { content: attr(data-label); }` preserves a single, canonical DOM table (`100% DRY architecture`) while allowing CSS to completely restructure the visual layout between columns and cards.
+
+#### When does this pattern have a screen-reader cost?
+Applying `display: block;` or `display: flex;` to semantic table elements (`<table>`, `<thead>`, `<tbody>`, `<tr>`, `<td>`) strips away native table semantics in certain browsers and assistive technologies (e.g., Apple VoiceOver on Safari or older NVDA/JAWS versions). When CSS overrides the table display properties, screen readers may stop announcing column relationships, row counts (`"Table with 8 rows and 6 columns"`), and header-to-cell associations (`headers="attr-color"`). Furthermore, some screen readers announce `::before` generated content (`content: attr(data-label)`) as plain string literals directly before the cell data, or in rare cases announce cell contents twice. To mitigate semantic loss when converting tables to cards via CSS, developers must often explicitly re-assert ARIA roles (`role="table"`, `role="rowgroup"`, `role="row"`, `role="cell"`) on the elements if tabular navigation needs to be preserved for screen reader users on mobile devices.
+
+#### Real-World Architecture Breakthroughs: `position: sticky` Traps & Table Caption Rendering
+During the implementation and verification of Task 7, we solved three critical, real-world CSS rendering gotchas:
+1. **The `overflow: hidden` / `overflow-x: auto` Sticky Trap:** When `position: sticky; top: 0;` is applied to `<th>` elements, it attaches exclusively to the *immediate scrolling ancestor box*. If any intermediate parent container (`table`, `#results-section`) has `overflow: hidden` or `overflow-x: auto`, the browser locks the sticky coordinate system to that inner box. When the user scrolls the main browser window (`window` scrollbar), the inner box is not scrolling vertically, causing the sticky headers to scroll right off the screen. **The Fix:** Removed all `overflow` clipping from `table` and `#results-section`, allowing `position: sticky` to attach 100% directly to the browser window viewport.
+2. **The `thead th` vs `tbody th[scope="row"]` Stacking Trap:** Initially, applying `th { position: sticky; top: 0; }` caused every `<th>` element across the entire table to stick during scrolling. In semantic tables, data rows often use `<th scope="row">` for their first cell (`Color`, `Size`, `Material`). Because generic `th` applied sticky rules to both the header titles AND the row titles, scrolling down caused the `tbody th[scope="row"]` cells (`Color`, `Size`) to slide up to `top: 0` and stick directly over the `Attribute Name` header cell, making it appear to disappear. **The Fix:** Strictly scoped the sticky rule to `thead th { position: sticky; top: 0; z-index: var(--z-elevated); }`.
+3. **The `display: block` vs `display: table-caption` Width Bug:** When an HTML `<caption>` element is forced to `display: block; width: 100%;` inside a `<table>` (`display: table`), some browser layout engines compute the `100%` block width against the very first table column (`~250px`) rather than the combined width of all columns. **The Fix:** Kept `display: table-caption; caption-side: top;` on `caption` so the table layout engine calculates `100%` across the entire multi-column width.
+
+---
+
+### Task 8: Form Styling & Accessible Focus (`forms.css`)
+- **Implemented Rules:** Styled `fieldset`, `legend`, `.form-group`, and `.form-field` with elevated spacing and grouping. Enforced `min-height: 44px` across all inputs, `<select>`, and `<textarea>` elements to satisfy WCAG 2.5.8 Minimum Touch Target requirements. Added high-contrast `:focus-visible` rings (`outline: 3px solid var(--color-focus-ring)`) with offset. Styled validation feedback using `.form-hint`, `.form-error`, and dynamic error states (`input:user-invalid`, `.form-group--error`). Custom-styled `<select>` dropdown arrows with inline SVG background images that adapt cleanly to dark mode (`[data-theme="dark"]`).
+
+#### Why should `placeholder` text NEVER be used as a replacement for a visible `<label>` element? What WCAG and UX failures occur when labels are omitted?
+Omitting visible `<label>` elements in favor of `placeholder` text causes critical usability and accessibility failures across modern web forms:
+1. **UX Failure ("The Vanishing Prompt"):** As soon as a user focuses an input and begins typing their first character, the placeholder text vanishes completely. If the user gets distracted or needs to review a long form before submitting, they have no visual indication of what data was requested by each field (`cognitive load failure`). Furthermore, placeholders cannot be selected or copied by users.
+2. **WCAG Accessibility & Screen Reader Failure:** Assistive technologies (screen readers like NVDA, JAWS, and VoiceOver) often treat `placeholder` attributes inconsistently or skip announcing them entirely when navigating between form controls. Without a `<label for="...">` or explicit `aria-labelledby` association, blind users land on anonymous input boxes and hear only `"Edit text, blank"`.
+3. **WCAG Contrast Failure (SC 1.4.3):** By default across browsers, placeholder text renders as low-contrast light gray (`#999999` on `#ffffff` $\approx 2.8:1$). This violates WCAG Success Criterion 1.4.3 (Contrast Minimum), which mandates a minimum contrast ratio of `4.5:1` for readable text. If a developer darkens the placeholder to pass `4.5:1` contrast, users frequently mistake the field for already containing pre-filled text (`false affordance`) and skip filling it out entirely. Therefore, a permanent, high-contrast, visible `<label>` element must always accompany every form field.
+
+#### Three things `:has()` unlocks that previously required JavaScript
+The CSS relational/parent selector `:has()` enables declarative logic directly inside stylesheets that previously required DOM queries (`closest()`, `querySelector()`) and event listeners (`addEventListener`):
+1. **Parent/Ancestor Styling on Child Focus:** Styling an outer `.form-group` card or border whenever an inner `<input>` receives focus (`.form-group:has(input:focus-visible) { border-color: var(--color-primary); }`). Previously, developers had to attach JS `onfocus`/`onblur` handlers to add/remove classes on the parent wrapper.
+2. **Conditional Sibling Styling based on Descendant Attributes:** Reaching up from `<input required>` to the parent wrapper (`.form-group`) and then styling a *different sibling element inside that group*, such as automatically appending a red `*` asterisk to `<label>` (`.form-group:has(input[required]) label::after { content: " *"; color: var(--color-danger); }`). Previously, this required JS DOM traversal on page load.
+3. **DOM Quantity & Content Queries:** Checking if an element exists inside a tree or if a specific item count is reached (`body:has(dialog[open]) { overflow: hidden; }` to lock background scrolling when a modal opens, or `ul:has(li:nth-child(6)) { display: grid; }` to change layouts when items exceed 5).
+
+#### Why is `:user-invalid` usually the right choice over `:invalid` in a form UX?
+If a developer applies error styling using `:invalid` (`input:invalid { border-color: red; }`), every `required` field across a brand new, untouched form immediately glows red before the user has even touched their mouse or keyboard (`premature validation`). This aggressive visual hostility increases user anxiety and abandonment rates. `:user-invalid` is a modern CSS pseudo-class that only triggers **after the user has interacted with the control** (e.g., focused the field, typed something, and tabbed away `blur`, or attempted to submit the form). This ensures users receive polite, respectful validation feedback that only alerts them after they have actually made an error.
+
+#### Two-Column vs Single-Column Responsive Form Layout Architecture
+We upgraded our form layout inside `forms.css` to use a **Mobile-First CSS Grid Two-Column Architecture**:
+- **Mobile Default (`< 48em`):** `fieldset { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-2) var(--space-5); }` ensures all form fields stack in a single vertical column for comfortable thumb reach.
+- **Desktop Grid (`≥ 48em / 768px`):** `@media (min-width: 48em) { fieldset { grid-template-columns: repeat(2, minmax(0, 1fr)); } }` shifts form inputs into a balanced 2-column grid (`Attribute Name` next to `Business Unit`, `Customer Location` next to `Company`).
+- **Auto-Spanning (`grid-column: 1 / -1`):** Using `:has()` selectors (`fieldset .form-group:has(textarea)`, `fieldset .form-group:has(fieldset)`), multi-line textareas and nested status groups automatically span across both grid columns without requiring manual HTML utility classes!
+
+#### Parent Validation Styling (`fieldset:has(input:user-invalid)`) & Progressive Enhancement Fallback
+To provide clear visual guidance when a form section contains validation errors, we implemented parent validation styling using `:has()`:
+- **Rule Implementation:** `fieldset:has(input:user-invalid), fieldset:has(select:user-invalid), fieldset:has(textarea:user-invalid)` applies a distinct `4px` red left accent stripe and subtle border glow (`var(--color-danger)`) to the outer `<fieldset>` wrapper whenever any child input fails validation. This directs user attention immediately to the container containing errors.
+- **Graceful Fallback & Progressive Enhancement:** Modern browsers natively execute `:has()`. For older Safari versions (`< 16.4`) where `:has()` is unsupported, we include `.fieldset--invalid` and `.fieldset--error` utility classes alongside the selector. Even when `:has()` is unsupported and JS has not added the utility class, older browsers gracefully fall back to styling the individual invalid controls inside (`input:user-invalid`) without breaking page layout or functionality (`100% Progressive Enhancement`).
+
+---
+
+### Task 9: Reusable UI Components (`buttons.css`, `alerts.css`, `cards.css`)
+- **Implemented Rules:** Built standalone, modular UI components using BEM methodology (`Block__Element--Modifier`) with flat specificity `(0,1,0)` and zero CSS duplication across pages:
+  - **Buttons (`buttons.css` / `.btn`):** Base `.btn` block enforces `min-height: 44px` (WCAG 2.5.8 Touch Targets), centered flex layout, `:active` push-down micro-animations (`translateY(1px)`), and `:focus-visible` offset rings. Created exact modifiers: `.btn--primary` (solid brand fill + shadow), `.btn--ghost` (transparent + border + hover tint), `.btn--danger` (destructive red fill), `.btn--icon` (square `44px × 44px` centering emoji/icons with `.sr-only` accessibility), and `.btn--sm` (`36px` touch targets for dense table cells). Also applied `.btn` defaults to raw `button[type="submit"]` and `button[type="reset"]` as fallback architecture.
+  - **Status Badges (`buttons.css` / `.badge`):** Styled `.badge`, `.badge--active` (`.status-active` success), and `.badge--inactive` (`.status-inactive` muted) as `9999px` pill chips (`border-radius: var(--radius-full)`) with semi-transparent background tints (`rgba(16, 185, 129, 0.15)`) and dark text contrast across both light and dark (`[data-theme="dark"]`) modes.
+  - **Alerts & Toasts (`alerts.css` / `.alert`, `.toast`, `#form-error-summary`, `#results-status`):** Created accessible notification boxes (`role="alert"` / `role="status"`) with slide-in entry animation (`alertSlideIn`), thick `4px` left accent stripes (`border-left`), and dedicated modifiers (`.alert--error`, `.alert--success`, `.alert--info`, `.alert--warning`). Implemented responsive fixed positioning specifically for `.toast`: fixed `bottom-right` on desktop (`bottom: var(--space-6); right: var(--space-6); max-width: 400px;`) and full-width bottom on mobile (`< 48em` via `left: var(--space-4); right: var(--space-4);`).
+  - **Cards & Pagination (`cards.css` / `.card`, `#quick-stats`, `.pagination`):** Built universal `.card` elevation boxes (`var(--color-surface)` + `var(--shadow-1)`) with optional interactive hover lift (`transform: translateY(-2px)`). Styled the Quick Stats aside (`#quick-stats`) with a bold top accent bar. Built `.pagination` clusters where every page item (`.pagination__link`, `.pagination__button`) strictly adheres to `min-width: 44px; min-height: 44px;` touch target sizing with `.pagination__link--active` state highlighting that enables multi-page navigation across prototype screens (`index.html` $\leftrightarrow$ `add-attribute.html` $\leftrightarrow$ `edit-attribute.html`).
+
+#### Why is `transition: all` an antipattern?
+When a developer writes `transition: all 0.3s ease;`, the browser attempts to interpolate and calculate intermediate values for **every single CSS property that changes** (including heavy layout properties like `width`, `height`, `margin`, `padding`, `top`, `left`, `box-shadow`, and `border-width`). Whenever a layout property changes during an animation, the browser engine must pause, recalculate the geometry of the entire DOM tree (`Reflow` / `Layout`), and repaint pixels across the screen (`Paint`) on every single frame (`60 times per second`). This causes severe CPU stuttering, frame drops (`jank`), and battery drain on mobile devices.
+
+#### What two CSS properties are cheap to animate and why?
+The two cheapest properties to animate in CSS are **`transform`** (e.g., `translateY()`, `scale()`, `rotate()`) and **`opacity`**.
+They are cheap because `transform` and `opacity` do **not** trigger DOM reflow or repainting! Instead, the browser offloads them directly to the GPU's **Compositor Thread**. The GPU simply takes the existing pre-rendered texture layer of the element and moves or fades it across the screen independently of the main JavaScript/DOM thread, guaranteeing buttery-smooth `60fps / 120fps` performance.
+
+#### What does `prefers-reduced-motion` respect, and what is the WCAG criterion behind it?
+`@media (prefers-reduced-motion: reduce)` detects whether a user has enabled **"Reduce Motion"** or **"Remove Animations"** inside their operating system accessibility settings (Windows, macOS, iOS, or Android).
+- **The WCAG Criteria Behind It:** It honors **WCAG Success Criterion 2.3.3 (Animation from Interactions - Level AAA)** and **WCAG 2.2.2 (Pause, Stop, Hide - Level A)**.
+- **The Medical Rationale:** Many users suffer from **vestibular disorders, inner ear conditions, epilepsy, or chronic migraines**. When UI elements rapidly slide, zoom, or bounce across the screen, it can trigger physical dizziness, vertigo, nausea, or seizures. Therefore, wrapping all transitions in `@media (prefers-reduced-motion: no-preference)` and providing zeroed fallbacks (`transform: none`) is a vital accessibility mandate.

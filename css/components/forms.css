@@ -1,0 +1,265 @@
+/* css/components/forms.css */
+/* Accessible Form Controls, Touch Targets (≥44px), Focus Rings, and Validation States */
+
+/* 1. Fieldset & Legend (Form Grouping & Structure with Two-Column Desktop Grid) */
+fieldset {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4) var(--space-5);
+  margin-block-end: var(--space-6);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-1);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  /* Single-column on mobile (< 48em) */
+  gap: var(--space-2) var(--space-5);
+}
+
+legend {
+  font-weight: 700;
+  font-size: var(--fs-md);
+  color: var(--color-primary);
+  padding-inline: var(--space-2);
+}
+
+/* Two-column layout on desktop (≥ 48em / 768px) */
+@media (min-width: 48em) {
+  fieldset {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-4) var(--space-6);
+  }
+
+  /* Automatically span full-width fields (textareas, nested fieldsets/status, or explicit .form-group--full) across both columns */
+  fieldset .form-group:has(textarea),
+  fieldset .form-group:has(fieldset),
+  fieldset .form-group--full {
+    grid-column: 1 / -1;
+  }
+}
+
+/* 2. Form Field Wrappers (.form-group / .form-field) */
+.form-group,
+.form-field {
+  display: flex;
+  flex-direction: column;
+  margin-block-end: var(--space-2);
+}
+
+/* 3. Form Labels */
+label,
+.form-field__label {
+  display: block;
+  font-weight: 600;
+  font-size: var(--fs-base);
+  color: var(--color-text);
+  margin-block-end: var(--space-2);
+  cursor: pointer;
+}
+
+/* 
+ * WHY :HAS() IS A GAME CHANGER (3 Things that previously required JS):
+ * 1. Parent/Ancestor Styling: Style an outer `.form-group` card when an inner `<input>` receives focus (`.form-group:has(input:focus-visible)`). Previously required JS focus/blur listeners.
+ * 2. Conditional Sibling Styling: Reaching up from `<input required>` to the parent `.form-group` and then styling a different sibling like `<label>` (`.form-group:has(input[required]) label::after { content: " *"; }`). Previously required JS DOM traversal.
+ * 3. Quantity & Content Queries: Checking if an element exists inside a tree (`body:has(dialog[open])` to lock page scrolling when modal opens, or `ul:has(li:nth-child(6))` to shift layout when items > 5).
+ */
+/* If the input inside this group is required, or label has class/attribute, show subtle red asterisk */
+.form-group:has(input[required]) label::after,
+.form-group:has(select[required]) label::after,
+.form-group:has(textarea[required]) label::after,
+label.required::after {
+  content: " *";
+  color: var(--color-danger);
+  font-weight: 700;
+}
+
+/* 4. Form Controls (Input, Select, Textarea) — Enforcing ≥44px Touch Targets */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="search"],
+input[type="url"],
+select,
+textarea,
+.form-field__input,
+.form-field__select {
+  width: 100%;
+  min-height: 44px;
+  /* WCAG 2.5.8 Minimum Touch Target requirement */
+  padding: var(--space-3) var(--space-4);
+  font-family: inherit;
+  font-size: var(--fs-base);
+  color: var(--color-text);
+  background-color: var(--bg-page);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+/* Textarea needs multi-line height and vertical resizing only */
+textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* Select element customization (ensure dropdown arrow doesn't overlap text) */
+select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%234A5568' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1em;
+  padding-right: var(--space-7);
+}
+
+[data-theme="dark"] select {
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23CBD5E0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+}
+
+/* 5. Accessible Focus Indicator (:focus-visible) */
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+.form-field__input:focus-visible,
+.form-field__select:focus-visible {
+  outline: 3px solid var(--color-focus-ring);
+  outline-offset: 1px;
+  border-color: var(--color-primary);
+  background-color: var(--color-surface);
+}
+
+/* Placeholders (WCAG contrast improvement & styling) */
+::placeholder {
+  color: var(--color-muted);
+  opacity: 0.8;
+}
+
+/* 6. Helper & Hint Text (.form-hint) */
+.form-hint {
+  display: block;
+  font-size: var(--fs-sm);
+  color: var(--color-muted);
+  margin-block-start: var(--space-2);
+  line-height: 1.4;
+}
+
+/* 7. Validation & Error States (.form-error, :user-invalid, .form-group--error) */
+.form-error {
+  display: block;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--color-danger);
+  margin-block-start: var(--space-2);
+  min-height: 1.4em;
+  /* Reserve vertical height so layout doesn't jump when error appears */
+}
+
+/* 
+ * WHY :USER-INVALID OVER :INVALID IN FORM UX?
+ * If you style `input:invalid { border-color: red; }`, all required fields on a fresh form immediately glow RED before the user even starts typing (`premature validation`).
+ * `:user-invalid` is a modern CSS pseudo-class that only triggers AFTER the user has interacted with the field (`blur` after typing or form submission attempt), ensuring users aren't shouted at before making a mistake!
+ */
+/* When form group is explicitly marked as invalid or control fails validation after interaction */
+.form-group--error input,
+.form-group--error select,
+.form-group--error textarea,
+.form-field--invalid .form-field__input,
+input:user-invalid,
+select:user-invalid,
+textarea:user-invalid {
+  border-color: var(--color-danger);
+  background-color: rgba(220, 53, 69, 0.03);
+}
+
+.form-group--error input:focus-visible,
+.form-group--error select:focus-visible,
+.form-group--error textarea:focus-visible,
+input:user-invalid:focus-visible,
+select:user-invalid:focus-visible,
+textarea:user-invalid:focus-visible {
+  outline-color: var(--color-danger);
+  border-color: var(--color-danger);
+}
+
+/* 
+ * MODERN PARENT SELECTOR (:has) ON FIELDSET & GRACEFUL FALLBACK:
+ * When ANY nested input inside a <fieldset> becomes invalid (`:user-invalid` or explicitly marked `.form-group--error`),
+ * `:has()` lets the outer `<fieldset>` border turn red (`var(--color-danger)`) with a left accent bar to highlight the section with errors!
+ * 
+ * Progressive Enhancement & Fallback (`.fieldset--invalid`):
+ * Modern browsers (Chrome, Edge, Safari 16.4+, Firefox) natively execute the `:has()` rule.
+ * For older Safari versions (< 16.4) that do not support `:has()`, we provide `.fieldset--invalid` / `.fieldset--error` alongside the rule.
+ * Even if `:has()` is unsupported, older browsers gracefully fall back to highlighting individual inner inputs (`input:user-invalid`) without breaking page layout!
+ */
+fieldset.fieldset--invalid,
+fieldset.fieldset--error,
+fieldset:has(input:user-invalid),
+fieldset:has(select:user-invalid),
+fieldset:has(textarea:user-invalid),
+fieldset:has(.form-group--error),
+fieldset:has(.form-field--invalid) {
+  border-color: var(--color-danger);
+  border-left-width: 4px;
+  /* Distinct left accent stripe so colorblind users notice the section error */
+  box-shadow: 0 0 0 1px rgba(220, 53, 69, 0.15);
+}
+
+/* Ensure the legend also turns red when its parent fieldset is invalid */
+fieldset.fieldset--invalid legend,
+fieldset.fieldset--error legend,
+fieldset:has(input:user-invalid) legend,
+fieldset:has(select:user-invalid) legend,
+fieldset:has(textarea:user-invalid) legend,
+fieldset:has(.form-group--error) legend,
+fieldset:has(.form-field--invalid) legend {
+  color: var(--color-danger);
+}
+
+/* Disabled & Readonly states */
+input:disabled,
+select:disabled,
+textarea:disabled {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: var(--color-muted);
+  cursor: not-allowed;
+  border-color: transparent;
+}
+
+[data-theme="dark"] input:disabled,
+[data-theme="dark"] select:disabled,
+[data-theme="dark"] textarea:disabled {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* 8. Radio & Checkbox Groups (.radio-group / .checkbox-group) */
+.radio-group,
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-block-start: var(--space-2);
+}
+
+.radio-group input[type="radio"],
+.radio-group input[type="checkbox"],
+.checkbox-group input[type="radio"],
+.checkbox-group input[type="checkbox"] {
+  width: 1.25em;
+  height: 1.25em;
+  min-height: auto;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+  margin: 0;
+}
+
+.radio-group label,
+.checkbox-group label {
+  display: inline-flex;
+  align-items: center;
+  margin-block-end: 0;
+  font-weight: 500;
+  cursor: pointer;
+}

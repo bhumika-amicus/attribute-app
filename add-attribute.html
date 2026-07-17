@@ -23,7 +23,7 @@
     <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 
     <!-- Site stylesheet -->
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/main.css">
 
 </head>
 
@@ -33,33 +33,33 @@
         Skip to main content
     </a>
 
-    <header role="banner">
+    <header role="banner" class="site-header">
 
-        <h1>
+        <h1 class="site-header__title">
             Attribute Management - Adding New Attribute
         </h1>
 
-        <nav role="navigation" aria-label="Primary">
-
-            <ul>
-
-                <li>
-                    <a href="index.html">
-                        Attribute List
-                    </a>
-                </li>
-
-                <li>
-                    <a href="add-attribute.html" aria-current="page">
-                        Add Attribute
-                    </a>
-                </li>
-
-            </ul>
-
-        </nav>
-
     </header>
+
+    <nav class="site-nav" role="navigation" aria-label="Primary">
+
+        <ul class="site-nav__list">
+
+            <li class="site-nav__item">
+                <a href="index.html" class="site-nav__link">
+                    Attribute List
+                </a>
+            </li>
+
+            <li>
+                <a href="add-attribute.html" class="site-nav__link site-nav__link--active" aria-current="page">
+                    Add Attribute
+                </a>
+            </li>
+
+        </ul>
+
+    </nav>
 
     <main id="main-content">
 
@@ -97,8 +97,8 @@
                             Attribute Name
                         </label>
 
-                        <input type="text" id="attribute-name" name="attributeName" required
-                            minlength="2" maxlength="50" pattern="[A-Za-z ]+"
+                        <input type="text" id="attribute-name" name="attributeName" required minlength="2"
+                            maxlength="50" pattern="[A-Za-z ]+"
                             aria-describedby="attribute-name-hint attribute-name-error"
                             placeholder="Enter attribute name">
 
@@ -189,8 +189,7 @@
                             Company
                         </label>
 
-                        <select id="company" name="company" required
-                            aria-describedby="company-hint company-error">
+                        <select id="company" name="company" required aria-describedby="company-hint company-error">
 
                             <option value="">
                                 Select Company
@@ -245,8 +244,7 @@
                                     Active
                                 </label>
 
-                                <input type="radio" id="status-inactive" name="isActive" value="inactive"
-                                >
+                                <input type="radio" id="status-inactive" name="isActive" value="inactive">
 
                                 <label for="status-inactive">
                                     Inactive
@@ -314,6 +312,25 @@
                 </div>
 
             </form>
+
+            <!-- Accessible Pagination Controls (`cards.css`) -->
+            <nav aria-label="Attribute pagination" class="pagination-wrapper">
+                <ul class="pagination">
+                    <li class="pagination__item">
+                        <a href="index.html" class="pagination__link" aria-label="Previous page (Dashboard)">← Prev</a>
+                    </li>
+                    <li class="pagination__item">
+                        <a href="index.html" class="pagination__link" aria-label="Page 1 (Dashboard)">1</a>
+                    </li>
+                    <li class="pagination__item">
+                        <a href="add-attribute.html" class="pagination__link pagination__link--active"
+                            aria-current="page" aria-label="Page 2 (Add Attribute)">2</a>
+                    </li>
+                    <li class="pagination__item">
+                        <button type="button" class="pagination__button" disabled aria-label="Next page">Next →</button>
+                    </li>
+                </ul>
+            </nav>
 
         </section>
 

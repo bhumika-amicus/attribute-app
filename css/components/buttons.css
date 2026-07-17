@@ -1,0 +1,211 @@
+/* css/components/buttons.css */
+/* Reusable UI Components: Buttons (.btn) & Badges (.badge) using BEM Methodology */
+
+/* ==========================================================================
+   1. Base Button Block (.btn & Form Button Defaults)
+   ========================================================================== */
+/*
+ * WHY `transition: all` IS AN ANTIPATTERN:
+ * Using `transition: all 0.3s ease` forces the browser engine to interpolate and animate EVERY changing CSS property (such as width, height, margin, padding, border-width, and box-shadow).
+ * Animating layout properties triggers DOM Reflow (re-calculating layout geometry across the page) and Repaint on every single frame (`60fps`), causing severe CPU stuttering, frame drops (`jank`), and high battery drain!
+ *
+ * WHY `transform` AND `opacity` ARE CHEAP TO ANIMATE:
+ * `transform` (e.g., `translateY`, `scale`) and `opacity` are strictly handled by the GPU (`Compositor Thread`) and do NOT trigger DOM Reflow or Repaint!
+ * The GPU takes the element's existing pre-rendered texture layer and moves or fades it across the screen independently of the main JavaScript/DOM thread, ensuring buttery-smooth `60fps/120fps` animations!
+ *
+ * WHAT `prefers-reduced-motion` RESPECTS & WCAG CRITERION BEHIND IT:
+ * `@media (prefers-reduced-motion: reduce)` detects whether a user has enabled "Reduce Motion" or "Remove Animations" in their OS accessibility settings (Windows, macOS, iOS, Android).
+ * This honors WCAG Success Criterion 2.3.3 (Animation from Interactions - Level AAA) and WCAG 2.2.2 (Pause, Stop, Hide - Level A).
+ * Rapid movement, zooming, and sliding can trigger physical dizziness, nausea, migraines, or seizures for users with vestibular disorders or epilepsy. Always wrap transitions in `no-preference` or provide zeroed fallbacks!
+ */
+.btn,
+button[type="submit"],
+button[type="reset"],
+button[type="button"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  /* WCAG 2.5.8 Minimum Touch Target requirement */
+  padding: var(--space-3) var(--space-5);
+  font-family: inherit;
+  font-size: var(--fs-base);
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none;
+  text-align: center;
+  white-space: nowrap;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Compositor-friendly transitions wrapped in prefers-reduced-motion */
+@media (prefers-reduced-motion: no-preference) {
+  .btn,
+  button[type="submit"],
+  button[type="reset"],
+  button[type="button"] {
+    transition: transform 0.1s ease, opacity 0.2s ease;
+  }
+}
+
+/* Micro-interaction on press (active) */
+.btn:active:not(:disabled),
+button[type="submit"]:active:not(:disabled),
+button[type="reset"]:active:not(:disabled),
+button[type="button"]:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+/* No-animation fallback when reduced motion is requested */
+@media (prefers-reduced-motion: reduce) {
+  .btn:active:not(:disabled),
+  button[type="submit"]:active:not(:disabled),
+  button[type="reset"]:active:not(:disabled),
+  button[type="button"]:active:not(:disabled) {
+    transform: none;
+  }
+}
+
+/* Accessible Keyboard Focus (:focus-visible) */
+.btn:focus-visible,
+button:focus-visible {
+  outline: 3px solid var(--color-focus-ring);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--color-surface);
+}
+
+/* Disabled State */
+.btn:disabled,
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+  box-shadow: none;
+}
+
+/* ==========================================================================
+   2. Button Modifiers (Color Variants & Shapes)
+   ========================================================================== */
+
+/* Primary Button (.btn--primary or unclassed submit buttons) */
+.btn--primary,
+button[type="submit"]:not(.btn--ghost):not(.btn--danger) {
+  background-color: var(--color-primary);
+  color: #ffffff;
+  box-shadow: var(--shadow-1);
+}
+
+.btn--primary:hover:not(:disabled),
+button[type="submit"]:not(.btn--ghost):not(.btn--danger):hover:not(:disabled) {
+  background-color: var(--color-primary-hover);
+  box-shadow: var(--shadow-2);
+}
+
+/* Ghost Button (.btn--ghost or unclassed reset buttons) */
+.btn--ghost,
+button[type="reset"]:not(.btn--primary):not(.btn--danger) {
+  background-color: transparent;
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+
+.btn--ghost:hover:not(:disabled),
+button[type="reset"]:not(.btn--primary):not(.btn--danger):hover:not(:disabled) {
+  background-color: rgba(0, 0, 0, 0.05);
+  border-color: var(--color-muted);
+}
+
+[data-theme="dark"] .btn--ghost:hover:not(:disabled),
+[data-theme="dark"] button[type="reset"]:hover:not(:disabled) {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Danger Button (.btn--danger) — used for Delete actions */
+.btn--danger {
+  background-color: var(--color-danger);
+  color: #ffffff;
+  box-shadow: var(--shadow-1);
+}
+
+.btn--danger:hover:not(:disabled) {
+  background-color: #b02a37;
+  /* Slightly darker shade of danger red */
+  box-shadow: var(--shadow-2);
+}
+
+/* Icon Button (.btn--icon) — square 44px × 44px button */
+.btn--icon {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border-radius: var(--radius-md);
+}
+
+/* Small Button (.btn--sm) — compact 36px touch target for dense data cells */
+.btn--sm {
+  min-height: 36px;
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--fs-sm);
+}
+
+/* ==========================================================================
+   3. Badges / Chips (.badge & Status Modifiers)
+   ========================================================================== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25em 0.75em;
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.03em;
+  border-radius: var(--radius-full);
+  /* 9999px pill shape */
+  white-space: nowrap;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Active Badge (.badge--active / .status-active) */
+.badge--active,
+.status-active {
+  background-color: rgba(16, 185, 129, 0.15);
+  /* Soft green tint */
+  color: #065f46;
+  /* Deep green text for crisp 4.5:1 contrast */
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+[data-theme="dark"] .badge--active,
+[data-theme="dark"] .status-active {
+  background-color: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  /* Bright emerald green for dark mode contrast */
+}
+
+/* Inactive Badge (.badge--inactive / .status-inactive) */
+.badge--inactive,
+.status-inactive {
+  background-color: rgba(107, 114, 128, 0.15);
+  /* Soft gray/amber tint */
+  color: #374151;
+  border: 1px solid rgba(107, 114, 128, 0.3);
+}
+
+[data-theme="dark"] .badge--inactive,
+[data-theme="dark"] .status-inactive {
+  background-color: rgba(107, 114, 128, 0.2);
+  color: #9ca3af;
+}
+
+/* Ensure inline form wrappers inside button clusters (.delete-form) do not disrupt horizontal alignment */
+.delete-form {
+  margin: 0;
+  display: inline-flex;
+}

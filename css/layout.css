@@ -1,0 +1,202 @@
+/* css/layout.css */
+/* Page chrome layout using CSS Grid and mobile-first em-based breakpoints */
+
+/* 
+ * WHY MOBILE-FIRST?
+ * Mobile-first styling sets single-column flow as the natural default without requiring a media query.
+ * This avoids the classic "desktop-first bug" where complex multi-column layouts, explicit widths, and large
+ * margins must be aggressively overridden or reset to `auto`/`100%` on small screens, causing specificity wars
+ * and horizontal scrollbar overflows.
+ *
+ * WHY EM-BASED BREAKPOINTS OVER PX?
+ * Media queries defined in `em` units respect the user's browser font-size scaling preferences. If a user with
+ * low vision sets their base font size to 24px (instead of the default 16px), a pixel breakpoint (768px) will not
+ * scale, causing text to overlap or break out of columns. An `em` breakpoint (48em) scales proportionally with their
+ * custom text size, ensuring multi-column layouts only trigger when there is genuine physical space for the text.
+ *
+ * WHY GRID-TEMPLATE-AREAS OVER NAMED LINES?
+ * For page-level layouts ("page chrome"), `grid-template-areas` provides a clear, self-documenting ASCII visual map
+ * of the exact document structure directly in CSS. Using chains of numeric grid lines (`grid-column: 1 / 4;`) makes
+ * future refactoring tedious and error-prone. With grid areas, rearranging columns requires changing just a single
+ * string matrix.
+ */
+
+/* 1. Mobile Default (< 48em / 768px): Single column stacked layout */
+body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto auto 1fr auto auto;
+  grid-template-areas:
+    "header"
+    "nav"
+    "main"
+    "aside"
+    "footer";
+
+  /*gap between two grid element*/
+  gap: var(--space-5);
+  /*padding around the grid container*/
+  padding: var(--space-4);
+  /*body can grow up to 1400px wide*/
+  max-width: 1400px;
+  /*center the body when the screen is wider than 1400px*/
+  margin-inline: auto;
+}
+
+/* Assign landmark regions to grid areas */
+header[role="banner"],
+.site-header {
+  grid-area: header;
+}
+
+nav[role="navigation"],
+.site-nav {
+  grid-area: nav;
+}
+
+main,
+#main-content {
+  grid-area: main;
+  /* Ensure min-width: 0 to prevent grid item blowout with wide tables or text 
+    Easy memory trick:
+    min-width: auto (default) -> "Protect my content."
+    min-width: 0 -> "Protect the layout."
+  */
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-7);
+}
+
+/* Contain the table strictly inside #results-section so horizontal scrollbars stay right under the table without bleeding onto Quick Stats */
+#results-section {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: visible;
+}
+
+/* Generous spacing and dividing line between Filter Attributes and Attribute Results */
+#filter-section {
+  padding-block-end: var(--space-6);
+  border-bottom: 2px solid var(--color-border);
+}
+
+aside,
+#quick-stats {
+  grid-area: aside;
+  position: relative;
+  z-index: 2; /* Ensures Quick Stats always sits cleanly above sticky table headers (z-index: 1) */
+}
+
+footer[role="contentinfo"],
+.site-footer {
+  grid-area: footer;
+}
+
+/* Header basic layout */
+.site-header {
+  padding-block: var(--space-3);
+  border-bottom: 2px solid var(--color-border);
+}
+
+/* Nav basic layout: stacked list on mobile */
+.site-nav__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.site-nav__link {
+  display: block;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  font-weight: 500;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.site-nav__link:hover,
+.site-nav__link:focus-visible {
+  background: var(--color-primary);
+  color: #ffffff;
+  border-color: var(--color-primary);
+  text-decoration: none;
+}
+
+.site-nav__link--active {
+  background: var(--color-primary);
+  color: #ffffff;
+  border-color: var(--color-primary);
+  font-weight: 700;
+}
+
+/* Aside Quick Stats basic layout */
+#quick-stats {
+  background: var(--color-surface);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-1);
+}
+
+#quick-stats h2 {
+  margin-block-end: var(--space-3);
+  font-size: var(--fs-lg);
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: var(--space-2);
+}
+
+#quick-stats p {
+  margin-block: var(--space-2);
+  color: var(--color-muted);
+  font-weight: 500;
+}
+
+/* Footer layout */
+footer[role="contentinfo"] {
+  padding-block: var(--space-4);
+  border-top: 1px solid var(--color-border);
+  text-align: center;
+  color: var(--color-muted);
+  font-size: var(--fs-sm);
+}
+
+
+/* 2. Tablet Layout (≥ 48em / 768px): Nav becomes horizontal top bar; Main has full width for table space */
+@media (min-width: 48em) {
+  body {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "header"
+      "nav"
+      "main"
+      "aside"
+      "footer";
+  }
+
+  /* Nav becomes horizontal across the top */
+  .site-nav__list {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+}
+
+
+/* 3. Desktop Layout (≥ 64em / 1024px): Full 3-Column Grid (Nav sidebar | Main center | Aside sidebar) */
+@media (min-width: 64em) {
+  body {
+    grid-template-columns: 240px minmax(0, 1fr) 280px;
+    grid-template-areas:
+      "header header header"
+      "nav    main   aside "
+      "footer footer footer";
+  }
+
+  /* Nav turns into vertical sidebar on the left */
+  .site-nav__list {
+    flex-direction: column;
+  }
+}

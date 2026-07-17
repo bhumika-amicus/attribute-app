@@ -1,0 +1,169 @@
+/* css/components/cards.css */
+/* Reusable UI Components: Cards (.card) & Pagination (.pagination) using BEM Methodology */
+
+/* ==========================================================================
+   1. Universal Card Block (.card & #quick-stats)
+   ========================================================================== */
+.card,
+#quick-stats {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-1);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .card,
+  #quick-stats {
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+}
+
+/* Optional interactive hover lift when card is a clickable anchor or button */
+a.card:hover,
+button.card:hover,
+.card--interactive:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-2);
+  border-color: var(--color-primary);
+  text-decoration: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  a.card:hover,
+  button.card:hover,
+  .card--interactive:hover {
+    transform: none;
+  }
+}
+
+/* Card Header, Body, & Footer elements */
+.card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-block-end: var(--space-4);
+  padding-block-end: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.card__title {
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  color: var(--color-primary);
+  margin: 0;
+}
+
+.card__body {
+  margin-block-end: var(--space-4);
+}
+
+.card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  margin-block-start: var(--space-4);
+  padding-block-start: var(--space-3);
+  border-top: 1px solid var(--color-border);
+}
+
+/* ==========================================================================
+   2. Quick Stats Card (#quick-stats specific enhancements)
+   ========================================================================== */
+#quick-stats {
+  margin-block: var(--space-6);
+  border-top: 4px solid var(--color-primary); /* Distinct top accent bar */
+}
+
+#quick-stats h2 {
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-block-end: var(--space-3);
+  padding-block-end: var(--space-2);
+  border-bottom: 1px solid var(--color-border);
+}
+
+#quick-stats p {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-block-end: var(--space-2);
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+/* Highlight numbers inside Quick Stats */
+#quick-stats p::after {
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+/* ==========================================================================
+   3. Accessible Pagination Block (.pagination)
+   ========================================================================== */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  list-style: none;
+  margin-block: var(--space-6);
+  padding: 0;
+}
+
+.pagination__item {
+  margin: 0;
+}
+
+.pagination__link,
+.pagination__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;  /* WCAG 2.5.8 Minimum Touch Target */
+  min-height: 44px; /* WCAG 2.5.8 Minimum Touch Target */
+  padding: 0 var(--space-3);
+  font-family: inherit;
+  font-size: var(--fs-base);
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--color-text);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.pagination__link:hover:not(.pagination__link--active),
+.pagination__button:hover:not(:disabled) {
+  background-color: rgba(0, 0, 0, 0.05);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+[data-theme="dark"] .pagination__link:hover:not(.pagination__link--active),
+[data-theme="dark"] .pagination__button:hover:not(:disabled) {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Active Page Modifier (.pagination__link--active) */
+.pagination__link--active,
+.pagination__button--active {
+  background-color: var(--color-primary);
+  color: #ffffff;
+  border-color: var(--color-primary);
+  cursor: default;
+  pointer-events: none;
+}
+
+/* Disabled Pagination Button */
+.pagination__button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}

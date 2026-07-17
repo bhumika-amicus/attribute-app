@@ -1,0 +1,17 @@
+/* css/main.css */
+
+/* 1. Declare layer precedence from lowest to highest priority */
+@layer reset, tokens, base, layout, components, utilities, pages;
+
+/* 2. Import modular stylesheets into their respective layers */
+@import url('tokens.css') layer(tokens);
+@import url('reset.css') layer(reset);
+@import url('base.css') layer(base);
+@import url('layout.css') layer(layout);
+@import url('components/buttons.css') layer(components);
+@import url('components/forms.css') layer(components);
+@import url('components/table.css') layer(components);
+@import url('components/alerts.css') layer(components);
+@import url('components/cards.css') layer(components);
+@import url('utilities.css') layer(utilities);
+@import url('pages.css') layer(pages);

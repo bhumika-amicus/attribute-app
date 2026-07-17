@@ -1,0 +1,239 @@
+/* css/components/table.css */
+/* Responsive Table Strategies, Sticky Header, Zebra Stripes, and Container Query Cards */
+
+/* 1. Desktop Table Setup (Default Base & ≥ 48em / 768px) */
+table {
+  width: 100%;
+  margin-block: var(--space-4);
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  /* Note: overflow: hidden removed from table so `position: sticky` on <th> works when scrolling the window! */
+  box-shadow: var(--shadow-1);
+}
+
+caption {
+  width: 100%;
+  display: table-caption;
+  caption-side: top;
+  padding-block: var(--space-2);
+  font-size: var(--fs-sm);
+  color: var(--color-muted);
+  text-align: left;
+  margin-block-end: var(--space-2);
+}
+
+/* Sticky table header across scrollable containers */
+thead,
+thead th {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-elevated);
+  background-color: var(--bg-page);
+}
+
+thead {
+  border-bottom: 2px solid var(--color-border);
+}
+
+th {
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  font-weight: 700;
+  color: var(--color-text);
+  white-space: nowrap;
+}
+
+/* Correct text alignment per data type (Actions and Status centered/aligned appropriately) */
+th#actions-header,
+td:last-child {
+  text-align: right;
+}
+
+/* Table body rows and cells */
+td,
+tbody th[scope="row"] {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text);
+  vertical-align: middle;
+}
+
+tbody th[scope="row"] {
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+/* Zebra row striping for every even table row on desktop with clear, visible contrast */
+tbody tr:nth-child(even) {
+  background-color: rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="dark"] tbody tr:nth-child(even) {
+  background-color: rgba(147, 189, 209, 0.15);
+}
+
+/* Hover highlight on table rows */
+tbody tr {
+  transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+tbody tr:hover {
+  background-color: rgba(var(--color-primary-hue), 85%, 45%, 0.08);
+}
+
+/* Focus-within indication when any button/link inside a row receives keyboard focus */
+tbody tr:focus-within {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+  background-color: rgba(var(--color-primary-hue), 85%, 45%, 0.12);
+}
+
+/* Sort indicators driven purely by [aria-sort] attributes — NO hardcoded HTML arrows */
+th[aria-sort="ascending"]::after {
+  content: " \2191";
+  /* Up arrow ↑ */
+  color: var(--color-primary);
+  font-weight: 900;
+}
+
+th[aria-sort="descending"]::after {
+  content: " \2193";
+  /* Down arrow ↓ */
+  color: var(--color-primary);
+  font-weight: 900;
+}
+
+th[aria-sort="none"]:hover::after {
+  content: " \2195";
+  /* Up/Down arrow ↕ */
+  color: var(--color-muted);
+  opacity: 0.5;
+}
+
+
+/* 2. Container Query Setup for Attribute Card / Table Rows (Task 6) */
+/* Establish container context on #results-section / tbody while keeping overflow visible so `position: sticky` on <th> works with window scrolling */
+#results-section {
+  width: 100%;
+  max-width: 100%;
+  container-type: inline-size;
+  container-name: attribute-list;
+}
+
+tbody {
+  container-type: inline-size;
+  container-name: attribute-list;
+}
+
+/* When the container itself is extremely narrow (< 320px), collapse the row card into a 1-line summary */
+@container attribute-list (max-width: 320px) {
+  tbody tr {
+    padding: var(--space-2);
+  }
+
+  /* Show only the Attribute Name header and Status/Action badges when tightly compressed */
+  tbody tr td:not(:last-child):not(:nth-last-child(2)) {
+    display: none;
+  }
+}
+
+
+/* 3. Mobile Card Transformation (< 48em / 768px): Convert <tr> to Card via CSS only (Task 7) */
+@media (max-width: 47.99em) {
+
+  table,
+  thead,
+  tbody,
+  th,
+  td,
+  tr {
+    display: block;
+  }
+
+  /* Visually hide the table header on mobile while keeping it in DOM for accessibility */
+  thead tr {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+  }
+
+  table {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+  }
+
+  /* Need to separately convert caption to block, or else it will behave differently */
+
+  caption {
+    display: block;
+    width: 100%;
+    white-space: normal;
+    line-height: 1.5;
+    margin-bottom: var(--space-4);
+  }
+
+
+  /* Transform each table row into an independent elevated card */
+  tbody tr {
+    margin-block-end: var(--space-4);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-3);
+    box-shadow: var(--shadow-1);
+  }
+
+  /* Row title (th scope="row") styled as the primary card header */
+  tbody th[scope="row"] {
+    font-size: var(--fs-lg);
+    border-bottom: 2px solid var(--color-border);
+    padding-block-end: var(--space-2);
+    margin-block-end: var(--space-2);
+  }
+
+  /* Each data cell displays inside the card layout */
+  tbody td {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    padding-block: var(--space-2);
+    padding-inline: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: right;
+  }
+
+  [data-theme="dark"] tbody td {
+    border-bottom-color: rgba(255, 255, 255, 0.05);
+  }
+
+  tbody td:last-child {
+    border-bottom: none;
+    padding-block-end: 0;
+    margin-block-start: var(--space-2);
+    justify-content: flex-end;
+  }
+
+  /* Inject mobile data-labels before each cell using attr(data-label) */
+  tbody td::before {
+    content: attr(data-label);
+    font-weight: 700;
+    color: var(--color-muted);
+    text-align: left;
+    margin-inline-end: var(--space-3);
+  }
+
+  /* Inject mobile data-labels before each cell using attr(data-label) */
+  tbody td::before {
+    content: attr(data-label);
+    font-weight: 700;
+    color: var(--color-muted);
+    text-align: left;
+    margin-inline-end: var(--space-3);
+  }
+
+  /* Hide data-label on action buttons cell if redundant */
+  tbody td[data-label="Actions"]::before {
+    display: none;
+  }
+}
