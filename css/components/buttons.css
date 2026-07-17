@@ -139,7 +139,7 @@ button[type="reset"]:not(.btn--primary):not(.btn--danger):hover:not(:disabled) {
 
 /* Icon Button (.btn--icon) — square 44px × 44px button */
 .btn--icon {
-  width: 44px;
+  
   height: 44px;
   min-width: 44px;
   min-height: 44px;
