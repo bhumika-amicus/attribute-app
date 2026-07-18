@@ -1,6 +1,6 @@
 // js/list.js
 
-import { getAll ,getSortedAttributes } from "./attributes.js";
+import { getAll, getSortedAttributes, remove } from "./attributes.js";
 import {getBusinessUnits, getLocations, getCompanies} from "./lookups.js";
 import { formatFullDate } from "./dateUtils.js";
 import { $, createFragment } from "./dom.js";
@@ -209,6 +209,8 @@ export function initList() {
 
     const paginationList = document.getElementById("pagination-list");
     paginationList?.addEventListener("click", handlePaginationClick);
+    
+    tableBody.addEventListener("click", handleTableClick);
 
     const filterForm =
         document.getElementById(
@@ -539,6 +541,8 @@ function createRow(attribute, businessUnits, locations, companies) {
 
     deleteButton.dataset.id =
         attribute.id;
+    deleteButton.dataset.name = 
+        attribute.attributeName;
 
 
     deleteButton.textContent =
@@ -663,5 +667,71 @@ function renderPagination(totalItems) {
     fragment.appendChild(nextLi);
 
     paginationList.appendChild(fragment);
+}
+
+// --- Toast & Delete Logic ---
+const toastTimers = new Map();
+
+export function showToast(message, type = "success") {
+    const container = document.getElementById("toast-container");
+    if (!container) return;
+
+    const toast = document.createElement("div");
+    toast.className = `toast toast--${type}`;
+    toast.setAttribute("role", "status");
+    toast.setAttribute("aria-live", "polite");
+
+    toast.innerHTML = `
+        <div class="toast__content">
+            <p class="toast__title">${message}</p>
+        </div>
+        <button type="button" class="toast__close" aria-label="Close notification">
+            &times;
+        </button>
+    `;
+
+    container.appendChild(toast);
+
+    // Close button logic
+    const closeBtn = toast.querySelector(".toast__close");
+    closeBtn.addEventListener("click", () => {
+        if (toastTimers.has(toast)) {
+            clearTimeout(toastTimers.get(toast));
+            toastTimers.delete(toast);
+        }
+        toast.remove();
+    });
+
+    // Auto-dismiss after 3s
+    const timerId = setTimeout(() => {
+        toast.remove();
+        toastTimers.delete(toast);
+    }, 3000);
+    
+    // Track timer for this specific toast to handle cleanup if closed manually
+    toastTimers.set(toast, timerId);
+}
+
+function handleTableClick(event) {
+    const deleteBtn = event.target.closest(".delete-button");
+    if (!deleteBtn) return;
+
+    const id = deleteBtn.dataset.id;
+    const name = deleteBtn.dataset.name;
+
+    if (confirm(`Are you sure you want to delete ${name}?`)) {
+        remove(id);
+        
+        // Adjust pagination if we deleted the last item on the current page
+        const filteredAttributes = getFilteredAttributes();
+        const totalPages = Math.ceil(filteredAttributes.length / state.rowsPerPage);
+        if (state.currentPage > totalPages && totalPages > 0) {
+            state.currentPage = totalPages;
+            updateUrlFromState();
+        }
+
+        render();
+        showToast(`Deleted Attribute '${name}'`);
+    }
 }
 

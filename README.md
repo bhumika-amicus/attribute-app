@@ -847,3 +847,11 @@ To migrate to server-side pagination, the client and server must agree on an API
   }
   ```
 The client relies on `meta.totalItems` to generate the correct number of pagination buttons without needing the full dataset.
+
+## Task 8 — Delete and Toast Notifications
+
+### setTimeout vs setInterval
+`setTimeout` schedules a function to run exactly once after a specified delay, while `setInterval` schedules a function to run repeatedly at a regular interval. You must use `clearTimeout` (or `clearInterval`) when a scheduled task is no longer needed—for example, if a user manually closes a notification before its auto-dismiss timer fires, preventing the callback from executing on an element that no longer exists.
+
+### Toast Overlap Bug
+If a global single-toast manager stores its timer in a single variable, rapidly triggering multiple toasts will overwrite that variable, leaving the previous timeouts orphaned and active. The stale timers will then fire prematurely, unexpectedly hiding the newly rendered toast. By using a `Map` that associates each unique toast DOM element with its specific timer ID, we can independently track and clear the correct timer whenever a toast is closed manually or superseded.
