@@ -1,7 +1,10 @@
 // js/list.js
 
-import { getAll, getBusinessUnits, getLocations, getCompanies } from "./attributes.js";
+import { getAll ,getSortedAttributes } from "./attributes.js";
+import {getBusinessUnits, getLocations, getCompanies} from "./lookups.js";
 import { formatFullDate } from "./dateUtils.js";
+import { $, createFragment } from "./dom.js";
+
 
 const state = {
     search: "",
@@ -99,10 +102,7 @@ function loadStateFromUrl() {
 
 export function initList() {
 
-    tableHead =
-        document.querySelector(
-            "#attribute-table thead"
-        );
+    tableHead = $("#attribute-table thead");
 
     tableBody =
         document.getElementById(
@@ -314,164 +314,6 @@ function updateSortIndicators() {
 
 }
 
-function getSortedAttributes(
-    attributes
-) {
-
-    if (
-        !state.sortColumn ||
-        state.sortDirection === "none"
-    ) {
-
-        return attributes;
-
-    }
-
-    const sorted =
-        [...attributes];
-
-    return sorted.sort(
-        compareAttributes
-    );
-
-}
-
-function compareAttributes(a, b) {
-
-    let valueA;
-    let valueB;
-
-    switch (
-    state.sortColumn
-    ) {
-
-        case "attributeName":
-
-            valueA =
-                a.attributeName;
-
-            valueB =
-                b.attributeName;
-
-            break;
-
-        case "businessUnit":
-
-            valueA =
-                getBusinessUnits()
-                    .find(
-                        bu => bu.id === a.businessUnitId
-                    )
-                    ?.name || "";
-
-            valueB =
-                getBusinessUnits()
-                    .find(
-                        bu => bu.id === b.businessUnitId
-                    )
-                    ?.name || "";
-
-            break;
-
-        case "location":
-
-            valueA =
-                getLocations()
-                        .find(
-                            loc => loc.id === a.customerLocationId
-                            )
-                            ?.name || "";
-            valueB=
-                getLocations()
-                        .find(
-                            loc => loc.id === b.customerLocationId
-                            )
-                            ?.name || "";
-            break;
-        
-        case "company":
-
-            valueA =
-                getCompanies()
-                        .find(
-                            comp => comp.id === a.companyId
-                            )
-                            ?.name || "";
-            valueB=
-                getCompanies()
-                        .find(
-                            comp => comp.id === b.companyId
-                            )
-                            ?.name || "";
-            break;
-        
-            
-        case "createdOn":
-
-            valueA =
-                a.createdOn;
-
-            valueB =
-                b.createdOn;
-
-            break;
-
-        case "isActive":
-
-            valueA =
-                a.isActive;
-
-            valueB =
-                b.isActive;
-
-            break;
-
-        default:
-
-            return 0;
-
-    }
-
-    let result = 0;
-
-    if (
-        typeof valueA === "string"
-    ) {
-
-        result =
-            valueA.localeCompare(
-                valueB
-            );
-
-    } else if (
-        typeof valueA === "number"
-    ) {
-
-        result =
-            valueA - valueB;
-
-    } else if (
-        typeof valueA === "boolean"
-    ) {
-
-        result =
-            Number(valueA) -
-            Number(valueB);
-
-    }
-
-    if (
-        state.sortDirection ===
-        "descending"
-    ) {
-
-        result *= -1;
-
-    }
-
-    return result;
-
-}
 
 function getFilteredAttributes() {
 
@@ -522,11 +364,7 @@ export function render() {
     const filteredAttributes =
         getFilteredAttributes();
 
-    const attributes =
-        getSortedAttributes(
-            filteredAttributes
-        );
-
+   
     const businessUnits =
         getBusinessUnits();
 
@@ -535,12 +373,19 @@ export function render() {
 
     const companies =
         getCompanies();
+    
+    const attributes =
+        getSortedAttributes(
+            filteredAttributes,
+            state.sortColumn,
+            state.sortDirection
+        );
+
 
     tableBody.replaceChildren();
 
-    const fragment =
-        document.createDocumentFragment();
-
+    const fragment =createFragment();
+    
     attributes.forEach(attribute => {
 
         const row =
@@ -716,3 +561,4 @@ function announceResults(count) {
             `${count} attributes shown`;
     }
 }
+
