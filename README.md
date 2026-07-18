@@ -766,7 +766,7 @@ Cross-Site Scripting (XSS) occurs when an attacker injects executable script int
 
 Appending elements one by one can trigger repeated DOM updates and layout calculations. A `DocumentFragment` allows many nodes to be built in memory first and inserted into the DOM in a single operation, reducing reflow and repaint work.
 
-### Task 5 — Debounced Filtering and URL State
+## Task 5 — Debounced Filtering and URL State
 
 I implemented filtering on the Attribute List page using a debounced search input and dropdown filters for Business Unit and Status. The search logic uses JavaScript array methods such as `filter()`, `includes()`, and `toLowerCase()` instead of loops.
 
@@ -791,3 +791,31 @@ The current filter state is mirrored into the URL using `history.replaceState()`
 On page load, the application reads these values from the URL and restores the filters automatically.
 
 Without storing filter state in the URL, refreshing the page would clear the visible filter selections and create confusion because users would lose their current view. Keeping filters in the URL also allows bookmarking, sharing links, and restoring state after refresh.
+
+
+
+## Task 6 Event Delegation:
+
+Event delegation is a JavaScript technique where a single event listener is attached to a parent element to handle events triggered by its child elements. It works using event bubbling, where the event moves from the target element up to its parent.
+
+### Advantages over one listener per element
+
+1. **Better performance**
+   - Fewer event listeners are created, which reduces memory usage and improves efficiency.
+
+2. **Supports dynamic elements**
+   - Newly added child elements automatically work with the same parent listener without needing separate event listeners.
+
+### When Event Delegation Fails
+
+Event delegation does not work for events that do not bubble, such as:
+
+- `focus`
+- `blur`
+- `mouseenter`
+- `mouseleave`
+
+For these cases, use bubbling alternatives:
+
+- `focusin`
+- `focusout`

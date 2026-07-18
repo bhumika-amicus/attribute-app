@@ -6,7 +6,10 @@ import { formatFullDate } from "./dateUtils.js";
 const state = {
     search: "",
     businessUnit: "",
-    status: ""
+    status: "",
+
+    sortColumn: "",
+    sortDirection: "none"
 };
 
 let tableBody;
@@ -15,6 +18,8 @@ let resultsStatus;
 let searchInput;
 let businessUnitSelect;
 let statusSelect;
+
+let tableHead;
 
 function debounce(callback, delay) {
 
@@ -93,6 +98,11 @@ function loadStateFromUrl() {
 
 
 export function initList() {
+
+    tableHead =
+        document.querySelector(
+            "#attribute-table thead"
+        );
 
     tableBody =
         document.getElementById(
@@ -175,6 +185,11 @@ export function initList() {
 
         }
     );
+    //one listener on tablehead for event delegation
+    tableHead.addEventListener(
+        "click",
+        handleSortClick
+    );
 
     const filterForm =
         document.getElementById(
@@ -191,6 +206,272 @@ export function initList() {
     render();
 }
 
+
+function handleSortClick(event) {
+
+    const header =
+        event.target.closest(
+            "[data-sort]"
+        );
+
+    if (!header) {
+        return;
+    }
+
+    const column =
+        header.dataset.sort;
+
+    updateSortState(column);
+
+    updateSortIndicators();
+
+    console.log(
+        state.sortColumn,
+        state.sortDirection
+    );
+
+    render();
+}
+
+function updateSortState(column) {
+
+    if (
+        state.sortColumn !== column
+    ) {
+
+        state.sortColumn =
+            column;
+
+        state.sortDirection =
+            "ascending";
+
+        return;
+    }
+
+    if (
+        state.sortDirection ===
+        "ascending"
+    ) {
+
+        state.sortDirection =
+            "descending";
+
+        return;
+    }
+
+    if (
+        state.sortDirection ===
+        "descending"
+    ) {
+
+        state.sortDirection =
+            "none";
+
+        state.sortColumn =
+            "";
+
+        return;
+    }
+
+    state.sortDirection =
+        "ascending";
+}
+
+function updateSortIndicators() {
+
+    const headers =
+        tableHead.querySelectorAll(
+            "[data-sort]"
+        );
+
+    headers.forEach(header => {
+
+        header.setAttribute(
+            "aria-sort",
+            "none"
+        );
+
+    });
+
+    if (
+        !state.sortColumn ||
+        state.sortDirection === "none"
+    ) {
+
+        return;
+
+    }
+
+    const activeHeader =
+        tableHead.querySelector(
+            `[data-sort="${state.sortColumn}"]`
+        );
+
+    activeHeader?.setAttribute(
+        "aria-sort",
+        state.sortDirection
+    );
+
+}
+
+function getSortedAttributes(
+    attributes
+) {
+
+    if (
+        !state.sortColumn ||
+        state.sortDirection === "none"
+    ) {
+
+        return attributes;
+
+    }
+
+    const sorted =
+        [...attributes];
+
+    return sorted.sort(
+        compareAttributes
+    );
+
+}
+
+function compareAttributes(a, b) {
+
+    let valueA;
+    let valueB;
+
+    switch (
+    state.sortColumn
+    ) {
+
+        case "attributeName":
+
+            valueA =
+                a.attributeName;
+
+            valueB =
+                b.attributeName;
+
+            break;
+
+        case "businessUnit":
+
+            valueA =
+                getBusinessUnits()
+                    .find(
+                        bu => bu.id === a.businessUnitId
+                    )
+                    ?.name || "";
+
+            valueB =
+                getBusinessUnits()
+                    .find(
+                        bu => bu.id === b.businessUnitId
+                    )
+                    ?.name || "";
+
+            break;
+
+        case "location":
+
+            valueA =
+                getLocations()
+                        .find(
+                            loc => loc.id === a.customerLocationId
+                            )
+                            ?.name || "";
+            valueB=
+                getLocations()
+                        .find(
+                            loc => loc.id === b.customerLocationId
+                            )
+                            ?.name || "";
+            break;
+        
+        case "company":
+
+            valueA =
+                getCompanies()
+                        .find(
+                            comp => comp.id === a.companyId
+                            )
+                            ?.name || "";
+            valueB=
+                getCompanies()
+                        .find(
+                            comp => comp.id === b.companyId
+                            )
+                            ?.name || "";
+            break;
+        
+            
+        case "createdOn":
+
+            valueA =
+                a.createdOn;
+
+            valueB =
+                b.createdOn;
+
+            break;
+
+        case "isActive":
+
+            valueA =
+                a.isActive;
+
+            valueB =
+                b.isActive;
+
+            break;
+
+        default:
+
+            return 0;
+
+    }
+
+    let result = 0;
+
+    if (
+        typeof valueA === "string"
+    ) {
+
+        result =
+            valueA.localeCompare(
+                valueB
+            );
+
+    } else if (
+        typeof valueA === "number"
+    ) {
+
+        result =
+            valueA - valueB;
+
+    } else if (
+        typeof valueA === "boolean"
+    ) {
+
+        result =
+            Number(valueA) -
+            Number(valueB);
+
+    }
+
+    if (
+        state.sortDirection ===
+        "descending"
+    ) {
+
+        result *= -1;
+
+    }
+
+    return result;
+
+}
 
 function getFilteredAttributes() {
 
@@ -238,8 +519,13 @@ function getFilteredAttributes() {
 export function render() {
 
 
-    const attributes =
+    const filteredAttributes =
         getFilteredAttributes();
+
+    const attributes =
+        getSortedAttributes(
+            filteredAttributes
+        );
 
     const businessUnits =
         getBusinessUnits();
@@ -273,8 +559,6 @@ export function render() {
     );
 
 }
-
-
 
 
 /*
