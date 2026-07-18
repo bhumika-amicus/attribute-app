@@ -1,16 +1,15 @@
 import { seedApplicationData } from "./storage.js";
+import {initList} from "./list.js";
+
 
 
 document.addEventListener(
   "DOMContentLoaded",
   async () => {
 
-    const data = await seedApplicationData();
+    await seedApplicationData();
 
-    console.log(
-      "Seed successful",
-      data
-    );
+    initList();
 
   }
 );

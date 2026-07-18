@@ -82,7 +82,7 @@ function loadData(key, fallback = []) {
 
 
 /* ==========================================
-   Attribute Storage
+   Storage
 ========================================== */
 
 
@@ -104,6 +104,35 @@ export function loadAttributes() {
   );
 
 }
+
+export function loadBusinessUnits() {
+
+  return loadData(
+    STORAGE_KEYS.BUSINESS_UNITS,
+    []
+  );
+
+}
+
+
+export function loadLocations() {
+
+  return loadData(
+    STORAGE_KEYS.LOCATIONS,
+    []
+  );
+
+}
+
+export function loadCompanies() {
+
+  return loadData(
+    STORAGE_KEYS.COMPANIES,
+    []
+  );
+
+}
+
 
 
 

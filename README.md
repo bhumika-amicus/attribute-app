@@ -747,3 +747,21 @@ The `ams` prefix ensures that Attribute Management System data remains isolated 
 * Storage limits can be exceeded, causing `QuotaExceededError`.
 
 Using `try/catch` prevents the application from crashing and allows the application to return safe fallback values when storage operations fail.
+
+## Rendering Notes
+
+### When is innerHTML acceptable?
+
+`innerHTML` is acceptable when rendering trusted, static markup that is fully controlled by the application.
+
+### When is innerHTML dangerous?
+
+`innerHTML` is dangerous when inserting user-supplied or untrusted content because it can execute malicious HTML or JavaScript.
+
+### What is XSS?
+
+Cross-Site Scripting (XSS) occurs when an attacker injects executable script into a page that is then run in another user's browser.
+
+### Why use DocumentFragment?
+
+Appending elements one by one can trigger repeated DOM updates and layout calculations. A `DocumentFragment` allows many nodes to be built in memory first and inserted into the DOM in a single operation, reducing reflow and repaint work.

@@ -133,6 +133,7 @@ button[type="reset"]:not(.btn--primary):not(.btn--danger):hover:not(:disabled) {
   background-color: var(--color-danger);
   color: #ffffff;
   box-shadow: var(--shadow-1);
+  
 }
 
 .btn--danger:hover:not(:disabled) {
