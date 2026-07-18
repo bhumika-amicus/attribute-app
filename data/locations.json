@@ -1,0 +1,16 @@
+[
+  { "id": "LOC001", "name": "New York", "businessUnitId": "BU001" },
+  { "id": "LOC002", "name": "Chicago", "businessUnitId": "BU001" },
+
+  { "id": "LOC003", "name": "London", "businessUnitId": "BU002" },
+  { "id": "LOC004", "name": "Manchester", "businessUnitId": "BU002" },
+
+  { "id": "LOC005", "name": "Mumbai", "businessUnitId": "BU003" },
+  { "id": "LOC006", "name": "Pune", "businessUnitId": "BU003" },
+
+  { "id": "LOC007", "name": "Singapore", "businessUnitId": "BU004" },
+  { "id": "LOC008", "name": "Sydney", "businessUnitId": "BU004" },
+
+  { "id": "LOC009", "name": "Bangalore", "businessUnitId": "BU005" },
+  { "id": "LOC010", "name": "Hyderabad", "businessUnitId": "BU005" }
+]

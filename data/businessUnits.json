@@ -1,0 +1,7 @@
+[
+  { "id": "BU001", "name": "Finance" },
+  { "id": "BU002", "name": "Human Resources" },
+  { "id": "BU003", "name": "Operations" },
+  { "id": "BU004", "name": "Sales" },
+  { "id": "BU005", "name": "Technology" }
+]

@@ -693,3 +693,57 @@ Benefits include:
 * No `file://` CORS issues.
 * Automatic browser refresh during development.
 * Behavior closer to a real production environment.
+
+
+Copy this directly into your `README.md`:
+
+
+## Local Storage Design
+
+### Why Namespace localStorage Keys?
+
+`localStorage` is shared by all applications running on the same origin.
+
+If two applications use the same key name, such as `"theme"`, they can overwrite each other's stored values.
+
+Example:
+
+Application A:
+
+```js
+localStorage.setItem("theme", "dark");
+````
+
+Application B:
+
+```js
+localStorage.setItem("theme", "light");
+```
+
+Now the value stored by Application A is overwritten by Application B.
+
+To avoid this issue, this project uses namespaced keys:
+
+```text
+ams.attributes
+ams.businessUnits
+ams.locations
+ams.companies
+ams.theme
+ams.seedVersion
+```
+
+The `ams` prefix ensures that Attribute Management System data remains isolated and prevents key collisions with other applications.
+
+---
+
+### Why Wrap Storage Reads in try/catch?
+
+`localStorage` operations can fail in several situations:
+
+* Stored JSON data becomes corrupted.
+* `JSON.parse()` throws an error when invalid JSON is encountered.
+* Private browsing modes may restrict storage access or provide zero storage quota.
+* Storage limits can be exceeded, causing `QuotaExceededError`.
+
+Using `try/catch` prevents the application from crashing and allows the application to return safe fallback values when storage operations fail.
