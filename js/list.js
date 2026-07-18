@@ -12,7 +12,10 @@ const state = {
     status: "",
 
     sortColumn: "",
-    sortDirection: "none"
+    sortDirection: "none",
+
+    currentPage: 1,
+    rowsPerPage: 5
 };
 
 let tableBody;
@@ -72,6 +75,11 @@ function updateUrlFromState() {
         );
 
     }
+    
+    if (state.currentPage > 1) {
+        params.set("page", state.currentPage);
+    }
+
     const queryString = params.toString();
     history.replaceState(
         null,
@@ -97,6 +105,8 @@ function loadStateFromUrl() {
     state.status =
         params.get("status") || "";
 
+    const pageParam = params.get("page");
+    state.currentPage = pageParam ? parseInt(pageParam, 10) : 1;
 }
 
 
@@ -149,6 +159,8 @@ export function initList() {
             state.search =
                 event.target.value;
 
+            state.currentPage = 1;
+
             updateUrlFromState();
 
             render();
@@ -165,6 +177,8 @@ export function initList() {
             state.businessUnit =
                 event.target.value;
 
+            state.currentPage = 1;
+
             updateUrlFromState();
 
             render();
@@ -179,6 +193,8 @@ export function initList() {
             state.status =
                 event.target.value;
 
+            state.currentPage = 1;
+
             updateUrlFromState();
 
             render();
@@ -190,6 +206,9 @@ export function initList() {
         "click",
         handleSortClick
     );
+
+    const paginationList = document.getElementById("pagination-list");
+    paginationList?.addEventListener("click", handlePaginationClick);
 
     const filterForm =
         document.getElementById(
@@ -381,12 +400,15 @@ export function render() {
             state.sortDirection
         );
 
+    const startIndex = (state.currentPage - 1) * state.rowsPerPage;
+    const endIndex = startIndex + state.rowsPerPage;
+    const paginatedAttributes = attributes.slice(startIndex, endIndex);
 
     tableBody.replaceChildren();
 
-    const fragment =createFragment();
+    const fragment = createFragment();
     
-    attributes.forEach(attribute => {
+    paginatedAttributes.forEach(attribute => {
 
         const row =
             createRow(attribute,
@@ -398,6 +420,8 @@ export function render() {
     });
 
     tableBody.appendChild(fragment);
+
+    renderPagination(attributes.length);
 
     announceResults(
         attributes.length
@@ -560,5 +584,84 @@ function announceResults(count) {
         resultsStatus.textContent =
             `${count} attributes shown`;
     }
+}
+
+function handlePaginationClick(event) {
+    const target = event.target;
+    const button = target.closest("button");
+    if (!button || button.disabled) {
+        return;
+    }
+
+    const newPage = parseInt(button.dataset.page, 10);
+    if (newPage && newPage !== state.currentPage) {
+        state.currentPage = newPage;
+        updateUrlFromState();
+        render();
+    }
+}
+
+function renderPagination(totalItems) {
+    const paginationList = document.getElementById("pagination-list");
+    if (!paginationList) return;
+
+    paginationList.replaceChildren();
+
+    const totalPages = Math.ceil(totalItems / state.rowsPerPage);
+    if (totalPages === 0) {
+        return;
+    }
+
+    const fragment = createFragment();
+
+    // Prev Button
+    const prevLi = document.createElement("li");
+    prevLi.classList.add("pagination__item");
+    const prevBtn = document.createElement("button");
+    prevBtn.type = "button";
+    prevBtn.classList.add("pagination__button");
+    prevBtn.dataset.page = state.currentPage - 1;
+    prevBtn.disabled = state.currentPage === 1;
+    prevBtn.setAttribute("aria-label", "Previous page");
+    prevBtn.textContent = "← Prev";
+    prevLi.appendChild(prevBtn);
+    fragment.appendChild(prevLi);
+
+    // Numbered Pages
+    for (let i = 1; i <= totalPages; i++) {
+        const pageLi = document.createElement("li");
+        pageLi.classList.add("pagination__item");
+        const pageBtn = document.createElement("button");
+        pageBtn.type = "button";
+        
+        // In the original, the active state is .pagination__link--active, 
+        // but here it's a button. We will use a button instead of a link.
+        pageBtn.classList.add("pagination__link");
+        if (i === state.currentPage) {
+            pageBtn.classList.add("pagination__link--active");
+            pageBtn.setAttribute("aria-current", "page");
+        }
+        
+        pageBtn.dataset.page = i;
+        pageBtn.setAttribute("aria-label", `Page ${i}`);
+        pageBtn.textContent = i;
+        pageLi.appendChild(pageBtn);
+        fragment.appendChild(pageLi);
+    }
+
+    // Next Button
+    const nextLi = document.createElement("li");
+    nextLi.classList.add("pagination__item");
+    const nextBtn = document.createElement("button");
+    nextBtn.type = "button";
+    nextBtn.classList.add("pagination__button");
+    nextBtn.dataset.page = state.currentPage + 1;
+    nextBtn.disabled = state.currentPage === totalPages;
+    nextBtn.setAttribute("aria-label", "Next page");
+    nextBtn.textContent = "Next →";
+    nextLi.appendChild(nextBtn);
+    fragment.appendChild(nextLi);
+
+    paginationList.appendChild(fragment);
 }
 

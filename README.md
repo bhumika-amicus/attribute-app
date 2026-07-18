@@ -819,3 +819,31 @@ For these cases, use bubbling alternatives:
 
 - `focusin`
 - `focusout`
+
+## Task 7 — Pagination Client vs Server
+
+### Why does a real app paginate on the SERVER?
+In a real-world enterprise application, data sets can grow exponentially. If a database contains millions of records, paginating on the server ensures that only a tiny, requested slice (e.g., 5 or 20 rows) is retrieved from the database, serialized, transmitted over the network, and loaded into the browser's memory at any given time. This optimizes bandwidth, minimizes server CPU/memory usage, and dramatically speeds up the client application.
+
+### What breaks at 100k rows client-side?
+If an application attempts to load 100,000 rows at once to perform pagination purely on the client-side:
+1. **Network Payload:** Transferring a massive JSON payload blocks the network and causes slow loading times.
+2. **Memory Leaks & Crashes:** The browser tab consumes excessive RAM to parse and hold the JSON objects, leading to out-of-memory crashes on mobile devices or lower-end machines.
+3. **Layout Thrashing & UI Freezes:** Any filtering, sorting, or DOM manipulation over 100k rows blocks the JavaScript main thread, making the UI completely unresponsive.
+4. **Stale Data:** By the time the user reaches page 50 of their 100k rows, the data may already be outdated compared to the server's state.
+
+### What's the contract between client pagination and a future server endpoint?
+To migrate to server-side pagination, the client and server must agree on an API contract:
+- **Request (Client to Server):** The client sends query parameters specifying the page state, such as `?page=2&limit=5&sortBy=attributeName&sortDir=desc`.
+- **Response (Server to Client):** The server returns a standardized JSON payload containing the requested slice of data *and* pagination metadata. For example:
+  ```json
+  {
+    "data": [ ...5 rows... ],
+    "meta": {
+      "totalItems": 1500,
+      "totalPages": 300,
+      "currentPage": 2
+    }
+  }
+  ```
+The client relies on `meta.totalItems` to generate the correct number of pagination buttons without needing the full dataset.
