@@ -3,8 +3,94 @@
 import { getAll, getBusinessUnits, getLocations, getCompanies } from "./attributes.js";
 import { formatFullDate } from "./dateUtils.js";
 
+const state = {
+    search: "",
+    businessUnit: "",
+    status: ""
+};
+
 let tableBody;
 let resultsStatus;
+
+let searchInput;
+let businessUnitSelect;
+let statusSelect;
+
+function debounce(callback, delay) {
+
+    let timeoutId;
+
+    return (...args) => {
+
+        clearTimeout(timeoutId);
+
+        timeoutId = setTimeout(
+            () => callback(...args),
+            delay
+        );
+
+    };
+
+}
+
+function updateUrlFromState() {
+
+    const params =
+        new URLSearchParams();
+
+    if (state.search) {
+
+        params.set(
+            "search",
+            state.search
+        );
+
+    }
+
+    if (state.businessUnit) {
+
+        params.set(
+            "businessUnit",
+            state.businessUnit
+        );
+
+    }
+
+    if (state.status) {
+
+        params.set(
+            "status",
+            state.status
+        );
+
+    }
+    const queryString = params.toString();
+    history.replaceState(
+        null,
+        "",
+        queryString
+            ? `?${queryString}`
+            : window.location.pathname)
+}
+
+function loadStateFromUrl() {
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    state.search =
+        params.get("search") || "";
+
+    state.businessUnit =
+        params.get("businessUnit") || "";
+
+    state.status =
+        params.get("status") || "";
+
+}
+
 
 export function initList() {
 
@@ -16,9 +102,135 @@ export function initList() {
         document.getElementById(
             "results-status"
         );
+
+
+    searchInput =
+        document.getElementById(
+            "search"
+        );
+
+    businessUnitSelect =
+        document.getElementById(
+            "business-unit"
+        );
+
+    statusSelect =
+        document.getElementById(
+            "status"
+        );
+
+    // Read filters from URL
+    loadStateFromUrl();
+
+    // Put state values back into UI
+    searchInput.value =
+        state.search;
+
+    businessUnitSelect.value =
+        state.businessUnit;
+
+    statusSelect.value =
+        state.status;
+
+    searchInput?.addEventListener(
+        "input",
+        debounce(event => {
+
+            state.search =
+                event.target.value;
+
+            updateUrlFromState();
+
+            render();
+
+        }, 500)
+    );
+
+
+
+    businessUnitSelect?.addEventListener(
+        "change",
+        event => {
+
+            state.businessUnit =
+                event.target.value;
+
+            updateUrlFromState();
+
+            render();
+
+        }
+    );
+
+    statusSelect?.addEventListener(
+        "change",
+        event => {
+
+            state.status =
+                event.target.value;
+
+            updateUrlFromState();
+
+            render();
+
+        }
+    );
+
+    const filterForm =
+        document.getElementById(
+            "filter-form"
+        );
+
+    filterForm?.addEventListener(
+        "submit",
+        event => event.preventDefault()
+    );
+
+
+
     render();
 }
 
+
+function getFilteredAttributes() {
+
+    const attributes =
+        getAll();
+
+    return attributes.filter(
+        attribute => {
+
+            const matchesSearch =
+                attribute.attributeName
+                    .toLowerCase()
+                    .includes(
+                        state.search
+                            .trim()
+                            .toLowerCase()
+                    );
+
+            const matchesBusinessUnit =
+                !state.businessUnit ||
+                attribute.businessUnitId ===
+                state.businessUnit;
+
+            const matchesStatus =
+                !state.status ||
+                (
+                    state.status === "active"
+                        ? attribute.isActive
+                        : !attribute.isActive
+                );
+
+            return (
+                matchesSearch &&
+                matchesBusinessUnit && matchesStatus
+            );
+
+        }
+    );
+
+}
 /*
     Main render function
 */
@@ -26,7 +238,9 @@ export function initList() {
 export function render() {
 
 
-    const attributes = getAll();
+    const attributes =
+        getFilteredAttributes();
+
     const businessUnits =
         getBusinessUnits();
 

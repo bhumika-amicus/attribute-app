@@ -748,7 +748,7 @@ The `ams` prefix ensures that Attribute Management System data remains isolated 
 
 Using `try/catch` prevents the application from crashing and allows the application to return safe fallback values when storage operations fail.
 
-## Rendering Notes
+## TASK 4 Rendering Notes
 
 ### When is innerHTML acceptable?
 
@@ -765,3 +765,29 @@ Cross-Site Scripting (XSS) occurs when an attacker injects executable script int
 ### Why use DocumentFragment?
 
 Appending elements one by one can trigger repeated DOM updates and layout calculations. A `DocumentFragment` allows many nodes to be built in memory first and inserted into the DOM in a single operation, reducing reflow and repaint work.
+
+### Task 5 — Debounced Filtering and URL State
+
+I implemented filtering on the Attribute List page using a debounced search input and dropdown filters for Business Unit and Status. The search logic uses JavaScript array methods such as `filter()`, `includes()`, and `toLowerCase()` instead of loops.
+
+#### Debounce Implementation
+
+The debounce function delays execution of the search until the user stops typing for a specified time. It uses `setTimeout()` together with a closure variable (`timeoutId`).
+
+When the user types:
+
+1. Any existing timer is cancelled using `clearTimeout()`.
+2. A new timer is created.
+3. The callback executes only after the user stops typing for the configured delay.
+
+This prevents unnecessary filtering and rendering on every keystroke, improving performance and user experience.
+
+#### Why Use URL State?
+
+The current filter state is mirrored into the URL using `history.replaceState()`. For example:
+
+`index.html?search=invoice&businessUnit=bu-1&status=active`
+
+On page load, the application reads these values from the URL and restores the filters automatically.
+
+Without storing filter state in the URL, refreshing the page would clear the visible filter selections and create confusion because users would lose their current view. Keeping filters in the URL also allows bookmarking, sharing links, and restoring state after refresh.
