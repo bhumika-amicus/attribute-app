@@ -642,3 +642,54 @@ A Lighthouse audit was run on all three pages using the following categories:
 
 All pages achieved the target scores.
 
+
+
+# Assignment 3 JavaScript
+## ES Modules for This Project
+
+This project uses ES Modules (`<script type="module">`) to organize JavaScript into separate, reusable files using `import` and `export`.
+
+### Trade-offs
+
+**Advantages**
+
+* Better code organization and maintainability.
+* Modules run in strict mode automatically.
+* Supports modern JavaScript features such as top-level `await`.
+* Module scripts are deferred by default.
+
+**Disadvantages**
+
+* Cannot be reliably run using the `file://` protocol.
+* Requires a local web server during development.
+* Older browsers may need additional support.
+
+### Deferred by Default
+
+Module scripts are automatically deferred, meaning the browser downloads them while parsing HTML but waits until the document has been fully parsed before executing them.
+
+As a result:
+
+* DOM elements are usually available when the module runs.
+* In many cases, a `DOMContentLoaded` listener is not required.
+* `DOMContentLoaded` fires only after module scripts have finished executing.
+
+### Why `file://` Breaks ES Modules
+
+Opening the application directly from the filesystem (for example, `file:///C:/project/index.html`) can cause module imports to fail because browsers apply security and CORS restrictions to ES module loading.
+
+This often results in errors such as:
+
+* "Failed to load module script"
+* CORS-related import errors
+
+### Why Use VS Code Live Server
+
+VS Code Live Server serves the project over HTTP (for example, `http://localhost:5500`) instead of `file://`.
+
+Benefits include:
+
+* ES module imports work correctly.
+* No `file://` CORS issues.
+* Automatic browser refresh during development.
+* Behavior closer to a real production environment.
