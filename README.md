@@ -906,3 +906,8 @@ An `AbortController` fixes this by acting as a kill switch. Before we fire a new
 **When else would you use AbortController in vanilla JS?**
 It is incredibly useful for cleanly removing event listeners without needing to keep a reference to the original function (by passing `{ signal: controller.signal }` to `addEventListener`), aborting `ReadableStream` operations, and cancelling `fetch()` requests.
 
+---
+
+# Task 15 – The Fetch-Doesn't-Throw Gotcha
+
+By design, the native `fetch()` API only rejects a Promise if there is a network failure (like the user losing WiFi). It resolves successfully even if the server returns a 404 (Not Found) or 500 (Internal Server Error) status code. Because of this, a simple `try/catch` block will miss these HTTP errors entirely. To handle both, we must check `response.ok` inside the `try` block and manually `throw new Error()` if it is false. Third-party libraries like `axios` differ from this because they automatically reject Promises for any status code outside the 200-299 range.

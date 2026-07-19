@@ -312,7 +312,7 @@ export async function seedApplicationData() {
     ];
 
 
-
+    //check for fetch as it doesnt throw erroe on 404 or 500
     responses.forEach(response => {
 
       if (!response.ok) {
