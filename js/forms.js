@@ -1,5 +1,5 @@
 import { getBusinessUnits, getLocations, getCompanies } from "./lookups.js";
-import { getById, getAll } from "./attributes.js";
+import { getById, getAll, create, update } from "./attributes.js";
 import {
     validateAttributeName, validateBusinessUnitId,
     validateCustomerLocationId, validateCompanyId, validateCreatedOn,
@@ -122,6 +122,23 @@ export function initForm() {
             // Now we can safely set the Location and Company
             customerLocationSelect.value = attribute.customerLocationId;
             companySelect.value = attribute.companyId;
+
+            // Fill in Created On and Notes
+            const createdOnInput = document.getElementById("created-on");
+            if (createdOnInput && attribute.createdOn) {
+                createdOnInput.value = attribute.createdOn.split("T")[0];
+            }
+
+            const notesInput = document.getElementById("notes");
+            if (notesInput) notesInput.value = attribute.notes;
+
+            // Check the correct Active/Inactive radio button
+            if (attribute.isActive) {
+                document.getElementById("status-active").checked = true;
+            } else {
+                document.getElementById("status-inactive").checked = true;
+            }
+
         }
     }
 
@@ -278,7 +295,7 @@ export function initForm() {
                 ul.appendChild(li);
             });
             errorSummaryEl.appendChild(ul);
-            
+
             errorSummaryEl.hidden = false;
 
             // CRITICAL WCAG ACCESSIBILITY: Move focus to the summary box so screen readers 
@@ -290,9 +307,35 @@ export function initForm() {
             errorSummaryEl.hidden = true;
             errorSummaryEl.replaceChildren();
 
-            // We will actually save the data to storage in Task 12!
-            alert("Success! The form is valid. (Saving data logic comes in Task 12)");
+            // --- TASK 12: SAVE & UPDATE LOGIC ---
+
+            // 1. Gather all the data from the form into an object
+            const formData = {
+                attributeName: document.getElementById("attribute-name").value.trim(),
+                businessUnitId: businessUnitSelect.value,
+                customerLocationId: customerLocationSelect.value,
+                companyId: companySelect.value,
+                createdOn: document.getElementById("created-on").value,
+                notes: document.getElementById("notes").value.trim(),
+
+                // For radio buttons, we have to find which one is checked
+                isActive: document.querySelector('input[name="isActive"]:checked').value === "active"
+            };
+
+            // 2. Decide if we are updating or creating
+            if (id) {
+                // We have an ID from the URL, so we are in Edit Mode
+                update(id, formData);
+            } else {
+                // We are in Add Mode. We need to generate a unique ID for the new attribute!
+                formData.id = "ATTR" + Date.now(); // Quick way to make a unique ID
+                create(formData);
+            }
+
+            // 3. Send the user back to the dashboard
+            window.location.href = "index.html";
         }
+
     });
 
     // --- STEP 8: LIVE CHARACTER COUNTER FOR NOTES ---
