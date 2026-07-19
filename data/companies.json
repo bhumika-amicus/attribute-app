@@ -1,7 +1,22 @@
 [
-  { "id": "COMP001", "name": "Acme Corp" },
-  { "id": "COMP002", "name": "Globex Corporation" },
-  { "id": "COMP003", "name": "Initech" },
-  { "id": "COMP004", "name": "Umbrella Systems" },
-  { "id": "COMP005", "name": "TechNova Solutions" }
+  {
+    "id": "COMP001",
+    "name": "Acme Corp"
+  },
+  {
+    "id": "COMP002",
+    "name": "Globex Corporation"
+  },
+  {
+    "id": "COMP003",
+    "name": "Initech"
+  },
+  {
+    "id": "COMP004",
+    "name": "Umbrella Systems"
+  },
+  {
+    "id": "COMP005",
+    "name": "TechNova Solutions"
+  }
 ]

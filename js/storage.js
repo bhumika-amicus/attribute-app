@@ -160,7 +160,7 @@ export function saveTheme(theme) {
       theme
     );
 
-  } catch(error) {
+  } catch (error) {
 
     console.error(
       "Theme save failed",
@@ -183,7 +183,7 @@ export function loadTheme() {
       ) || "light"
     );
 
-  } catch(error) {
+  } catch (error) {
 
     console.error(
       "Theme load failed",
@@ -211,7 +211,7 @@ export function saveSeedVersion(version) {
       version
     );
 
-  } catch(error) {
+  } catch (error) {
 
     console.error(
       "Seed version save failed",
@@ -234,7 +234,7 @@ export function getSeedVersion() {
       ) || ""
     );
 
-  } catch(error) {
+  } catch (error) {
 
     return "";
   }
@@ -393,7 +393,7 @@ export async function seedApplicationData() {
 
 
 
-  } catch(error) {
+  } catch (error) {
 
 
     console.error(
@@ -401,18 +401,7 @@ export async function seedApplicationData() {
       error
     );
 
-
-    return {
-
-      attributes: [],
-
-      businessUnits: [],
-
-      locations: [],
-
-      companies: []
-
-    };
+    throw error;
 
   }
 
