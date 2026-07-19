@@ -922,3 +922,12 @@ A user's operating system might be set to Dark Mode, but they might specifically
 **What is the CSS-only equivalent, and why is JS better?**
 The CSS-only equivalent is using the `@media (prefers-color-scheme: dark)` media query to automatically apply dark styles. While CSS-only is faster and requires no JavaScript, it is completely rigid. It offers zero override capability. If a user wants their OS in dark mode but our app in light mode, CSS-only makes that impossible. The JavaScript toggle gives us the best of both worlds: a smart OS fallback with full user control.
 
+# Task 19 – Final Lighthouse Audit
+
+The application was audited using Google Chrome's built-in Lighthouse tool to ensure high performance, accessibility, best practices, and SEO. 
+
+![Lighthouse Audit](assets/index_page_lighthouse_js.png)
+![Add Page Lighthouse Audit](assets/add_page_lighthouse_JS.png)
+![Edit Page Lighthouse Audit](assets/Edit_page_lighthouse_JS.png)
+
+All scores successfully exceeded the assignment target thresholds (≥95 and ≥90). No trade-off explanations were necessary as there were no failing categories.

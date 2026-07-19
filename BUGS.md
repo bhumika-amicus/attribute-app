@@ -171,3 +171,83 @@ This allows the flex item to shrink within the available space, preventing overf
 ## Why?
 
 Flex items default to `min-width: auto`, which protects their content from shrinking. Setting `min-width: 0` allows the flex item to shrink when needed, protecting the overall layout instead.
+
+# JS Assignment bug fixes
+
+## Task 17 
+
+### Bug A: var closure-in-loop classic
+
+**Problem:** Using `var` inside a `for` loop with an asynchronous function like `setTimeout` causes all iterations to share the same variable reference. By the time the timeout runs, the loop has finished and the variable is at its final value (3).
+**Observation:** Expected `0, 1, 2` but the console printed `3, 3, 3`.
+
+![bug using let](assets/BugA2.png)
+
+**Fix:** Changed `var` to `let`. `let` is block-scoped, so it creates a fresh binding for `i` in every iteration of the loop, preserving the correct value for each timeout.
+
+![bug using var](assets/BugA.png)
+
+### ## Task 17 - Bug B: `this` binding
+
+**Problem:** When a class method is passed directly to an event listener (`button.addEventListener('click', myTable.addRow)`), it loses its context. When the event fires, `this` evaluates to the DOM element (the button) instead of the class instance, causing the class properties to be `undefined`.
+**Observation:** Expected `Adding row to: Attributes Table` but the console printed `Adding row to: undefined`.
+
+![this bug before bind](assets/BugB.png)
+
+**Fix:** There are two ways to fix this context loss in JavaScript:
+1. Use `.bind(this)` in the constructor (`this.addRow = this.addRow.bind(this);`) to permanently bind the method to the class.
+2. Use an Arrow Function for the method (`addRow = () => { ... }`), which inherently captures `this` from its surrounding lexical scope.
+
+![this bug after bind](assets/BugB2.png)
+
+
+### Bug C: Forgetting JSON.parse on localStorage
+
+**Problem:** `localStorage` can only store text strings. When retrieving a stringified JSON object, if you forget to run `JSON.parse()`, the variable remains a string type instead of becoming a JavaScript object.
+**Observation:** Attempting to access an object property (e.g., `badData.name`) on a string returns `undefined`. Attempting to chain a method on that property (`badData.name.toUpperCase()`) throws an `Uncaught TypeError: Cannot read properties of undefined`.
+
+
+![bug c before](assets/BugC.png)
+
+**Fix:** Wrap the `localStorage.getItem()` call in `JSON.parse()` to deserialize the string back into a usable JavaScript object.
+
+![bug c after](assets/BugC2.png)
+
+### Bug D: Mutating nested arrays/objects
+
+**Problem:** Arrays and objects are passed by reference in JavaScript. If a function modifies a nested object within an array, it inadvertently mutates the caller's original data, causing unexpected side effects.
+**Observation:** Modifying `cart[0].price` inside the function permanently changed `originalCart[0].price` to `0.5`.
+
+![bugd](assets/bugd.png)
+
+**Fix:** We must clone the data before modifying it. 
+- Using the spread operator (`[...cart]`) creates a **shallow copy**, which fails here because the nested objects are still shared references.
+
+![shallow copy](assets/shallowcopy.png)
+
+- Using `structuredClone(cart)` creates a **deep copy**, completely severing all memory references and protecting the original data.
+
+![deep copy](assets/deepcopy.png)
+
+### Bug E: Event Listener Leak
+
+**Problem:** When UI components (like modals) mount and unmount, any event listeners attached to global objects (like `window` or `document`) will persist forever unless explicitly removed. If a modal is opened and closed repeatedly, these listeners accumulate, causing severe performance degradation and duplicate event firing.
+**Observation:** After opening and closing the leaky modal 3 times, pressing the Escape key once caused the event listener to fire 3 separate times simultaneously.
+
+![leak before](assets/bugE.png)
+
+**Fix:** Pass an `AbortSignal` to the event listener options (`{ signal: controller.signal }`). When the modal closes, calling `controller.abort()` will instantly and cleanly remove all event listeners associated with that signal, without needing to maintain references to the callback functions.
+
+![leak after](assets/bugE2.png)
+
+## Task 18 - Sources Panel Debugger
+
+**Observation:**
+By placing a breakpoint inside the `create()` function and submitting the form, execution paused exactly before the attribute was saved. 
+
+**What I learned compared to console.log:**
+1. The **Scope Panel** instantly displayed the entire state of the `attribute` object containing the form data, saving me from having to manually write `console.log` for every single variable I wanted to inspect.
+2. The **Call Stack Panel** allowed me to trace the exact execution path backward in time, clearly showing that `create()` in `attributes.js` was triggered by an anonymous event listener function in `forms.js`.
+3. By using the **Step Over** tool, I could advance the execution line-by-line while watching variables update in real-time, which is much more powerful for finding complex logic bugs than staring at static logs in the console.
+
+![debug](assets/Task_18.png)
