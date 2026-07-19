@@ -1,6 +1,7 @@
 /* css/tokens.css */
 
 :root {
+  color-scheme: light;
   /* Brand & Color Primitives */
   --color-primary-hue: 220;
   --color-primary: hsl(var(--color-primary-hue), 85%, 45%);
@@ -39,32 +40,53 @@
   --font-base: var(--font-family);
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 
-  --font-size-sm: 0.875rem;   /* 14px */
-  --font-size-base: 1rem;     /* 16px */
-  --font-size-lg: 1.25rem;    /* 20px */
-  --font-size-xl: 1.75rem;    /* 28px */
+  --font-size-sm: 0.875rem;
+  /* 14px */
+  --font-size-base: 1rem;
+  /* 16px */
+  --font-size-lg: 1.25rem;
+  /* 20px */
+  --font-size-xl: 1.75rem;
+  /* 28px */
   --line-height-base: 1.5;
 
-  --fs-xs: 0.75rem;                               /* 12px */
-  --fs-sm: var(--font-size-sm);                   /* 14px */
-  --fs-base: var(--font-size-base);               /* 16px */
-  --fs-lg: var(--font-size-lg);                   /* 20px */
-  --fs-xl: clamp(1.5rem, 1.2vw + 1.2rem, 2.25rem);/* Fluid 24px - 36px */
-  --fs-2xl: clamp(2rem, 2vw + 1.5rem, 3.25rem);   /* Fluid 32px - 52px */
+  --fs-xs: 0.75rem;
+  /* 12px */
+  --fs-sm: var(--font-size-sm);
+  /* 14px */
+  --fs-base: var(--font-size-base);
+  /* 16px */
+  --fs-lg: var(--font-size-lg);
+  /* 20px */
+  --fs-xl: clamp(1.5rem, 1.2vw + 1.2rem, 2.25rem);
+  /* Fluid 24px - 36px */
+  --fs-2xl: clamp(2rem, 2vw + 1.5rem, 3.25rem);
+  /* Fluid 32px - 52px */
 
   /* Spacing Scale (Rem-based, 4px/0.25rem ratio) */
-  --space-xs: 0.25rem; /* 4px */
-  --space-sm: 0.5rem;  /* 8px */
-  --space-md: 1rem;    /* 16px */
-  --space-lg: 1.5rem;  /* 24px */
-  --space-xl: 2rem;    /* 32px */
+  --space-xs: 0.25rem;
+  /* 4px */
+  --space-sm: 0.5rem;
+  /* 8px */
+  --space-md: 1rem;
+  /* 16px */
+  --space-lg: 1.5rem;
+  /* 24px */
+  --space-xl: 2rem;
+  /* 32px */
 
-  --space-1: 0.25rem;  /* 4px */
-  --space-2: 0.5rem;   /* 8px */
-  --space-3: 0.75rem;  /* 12px */
-  --space-4: 1rem;     /* 16px */
-  --space-5: 1.5rem;   /* 24px */
-  --space-6: 2rem;     /* 32px */
+  --space-1: 0.25rem;
+  /* 4px */
+  --space-2: 0.5rem;
+  /* 8px */
+  --space-3: 0.75rem;
+  /* 12px */
+  --space-4: 1rem;
+  /* 16px */
+  --space-5: 1.5rem;
+  /* 24px */
+  --space-6: 2rem;
+  /* 32px */
 
   /* Borders & Shadows */
   --radius-sm: 4px;
@@ -87,6 +109,7 @@
 
 /* Dark Mode Overrides via Data Attribute */
 [data-theme="dark"] {
+  color-scheme: dark;
   --bg-page: #121212;
   --bg-surface: #1e1e1e;
   --text-main: #f8f9fa;

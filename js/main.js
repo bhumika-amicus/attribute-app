@@ -1,6 +1,7 @@
 import { seedApplicationData } from "./storage.js";
 import { initList } from "./list.js";
 import { initForm } from "./forms.js";
+import { initTheme } from "./theme.js";
 
 // A small helper to inject HTML at the top of the main content area
 function renderBanner(html) {
@@ -17,6 +18,8 @@ function renderBanner(html) {
 
 // We wrap everything in a function so the Retry button can call it again!
 async function bootApplication() {
+
+  initTheme();
 
   renderBanner(`<p class="loading-text">Loading application data...</p>`);
 

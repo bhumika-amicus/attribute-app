@@ -399,9 +399,6 @@ function getFilteredAttributes() {
 
 // Add 'async' and accept the 'signal' parameter
 async function render(signal) {
-
-    // 1. Artificially pause for 1 second to simulate a slow database
-    await new Promise(resolve => setTimeout(resolve, 5000));
     // 2. Before we spend any effort building the HTML table, check the Kill Switch!
     if (signal && signal.aborted) {
         // If the switch was pressed, throw an AbortError and STOP!

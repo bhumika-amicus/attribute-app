@@ -911,3 +911,14 @@ It is incredibly useful for cleanly removing event listeners without needing to 
 # Task 15 – The Fetch-Doesn't-Throw Gotcha
 
 By design, the native `fetch()` API only rejects a Promise if there is a network failure (like the user losing WiFi). It resolves successfully even if the server returns a 404 (Not Found) or 500 (Internal Server Error) status code. Because of this, a simple `try/catch` block will miss these HTTP errors entirely. To handle both, we must check `response.ok` inside the `try` block and manually `throw new Error()` if it is false. Third-party libraries like `axios` differ from this because they automatically reject Promises for any status code outside the 200-299 range.
+
+---
+
+# Task 16 – Dark Mode Theme Toggle
+
+**Why prefer the user's explicit choice over the OS preference?**
+A user's operating system might be set to Dark Mode, but they might specifically prefer reading our application in Light Mode. If we constantly force the OS preference on every page load, we remove their autonomy and create a frustrating experience. Once a user makes an explicit choice (saved in `localStorage`), we must respect it as the highest priority.
+
+**What is the CSS-only equivalent, and why is JS better?**
+The CSS-only equivalent is using the `@media (prefers-color-scheme: dark)` media query to automatically apply dark styles. While CSS-only is faster and requires no JavaScript, it is completely rigid. It offers zero override capability. If a user wants their OS in dark mode but our app in light mode, CSS-only makes that impossible. The JavaScript toggle gives us the best of both worlds: a smart OS fallback with full user control.
+
