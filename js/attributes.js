@@ -256,3 +256,40 @@ function compareAttributes(
   return result;
 
 }
+
+export function search(attributes, searchStr, businessUnit, status) {
+  return attributes.filter(attribute => {
+    const matchesSearch =
+        attribute.attributeName
+            .toLowerCase()
+            .includes(
+                searchStr
+                    .trim()
+                    .toLowerCase()
+            );
+
+    const matchesBusinessUnit =
+        !businessUnit ||
+        attribute.businessUnitId ===
+        businessUnit;
+
+    const matchesStatus =
+        !status ||
+        (
+            status === "active"
+                ? attribute.isActive
+                : !attribute.isActive
+        );
+
+    return (
+        matchesSearch &&
+        matchesBusinessUnit && matchesStatus
+    );
+  });
+}
+
+export function paginate(attributes, page, rowsPerPage) {
+  const startIndex = (page - 1) * rowsPerPage;
+  const endIndex = startIndex + rowsPerPage;
+  return attributes.slice(startIndex, endIndex);
+}

@@ -1,9 +1,10 @@
 // js/list.js
 
-import { getAll, getSortedAttributes, remove } from "./attributes.js";
+import { getAll, getSortedAttributes, remove, search, paginate } from "./attributes.js";
 import { getBusinessUnits, getLocations, getCompanies } from "./lookups.js";
 import { formatFullDate } from "./dateUtils.js";
 import { $, createFragment } from "./dom.js";
+import { events } from "./events.js";
 
 
 const state = {
@@ -114,6 +115,12 @@ function loadStateFromUrl() {
 
 
 export function initList() {
+    render();
+    
+    events.on("attribute:deleted", async (id) => {
+        await render();
+        showToast(`Deleted Attribute successfully`);
+    });
 
     tableHead = $("#attribute-table thead");
 
@@ -355,43 +362,7 @@ function updateSortIndicators() {
 
 
 function getFilteredAttributes() {
-
-    const attributes =
-        getAll();
-
-    return attributes.filter(
-        attribute => {
-
-            const matchesSearch =
-                attribute.attributeName
-                    .toLowerCase()
-                    .includes(
-                        state.search
-                            .trim()
-                            .toLowerCase()
-                    );
-
-            const matchesBusinessUnit =
-                !state.businessUnit ||
-                attribute.businessUnitId ===
-                state.businessUnit;
-
-            const matchesStatus =
-                !state.status ||
-                (
-                    state.status === "active"
-                        ? attribute.isActive
-                        : !attribute.isActive
-                );
-
-            return (
-                matchesSearch &&
-                matchesBusinessUnit && matchesStatus
-            );
-
-        }
-    );
-
+    return search(getAll(), state.search, state.businessUnit, state.status);
 }
 /*
     Main render function
@@ -428,10 +399,13 @@ async function render(signal) {
             state.sortDirection
         );
 
-    //index and slicing for pagination
-    const startIndex = (state.currentPage - 1) * state.rowsPerPage;
-    const endIndex = startIndex + state.rowsPerPage;
-    const paginatedAttributes = attributes.slice(startIndex, endIndex);
+    const totalPages = Math.ceil(attributes.length / state.rowsPerPage);
+    if (state.currentPage > totalPages && totalPages > 0) {
+        state.currentPage = totalPages;
+        updateUrlFromState();
+    }
+
+    const paginatedAttributes = paginate(attributes, state.currentPage, state.rowsPerPage);
 
     tableBody.replaceChildren();
     const fragment = createFragment();
@@ -790,17 +764,7 @@ function handleTableClick(event) {
 
     if (confirm(`Are you sure you want to delete ${name}?`)) {
         remove(id);
-
-        // Adjust pagination if we deleted the last item on the current page
-        const filteredAttributes = getFilteredAttributes();
-        const totalPages = Math.ceil(filteredAttributes.length / state.rowsPerPage);
-        if (state.currentPage > totalPages && totalPages > 0) {
-            state.currentPage = totalPages;
-            updateUrlFromState();
-        }
-
-        render();
-        showToast(`Deleted Attribute '${name}'`);
+        events.emit("attribute:deleted", id);
     }
 }
 

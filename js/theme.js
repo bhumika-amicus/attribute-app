@@ -1,3 +1,5 @@
+import { events } from "./events.js";
+
 export function initTheme() {
     const themeToggleButton = document.getElementById("theme-toggle");
     if (!themeToggleButton) return;
@@ -10,6 +12,7 @@ export function initTheme() {
 
     // 2. Apply the theme to the root <html> tag
     document.documentElement.setAttribute("data-theme", currentTheme);
+    events.emit("theme:changed", currentTheme);
 
     // 3. Toggle button click listener
     themeToggleButton.addEventListener("click", () => {
@@ -20,6 +23,8 @@ export function initTheme() {
         
         // Persist the user's explicit choice!
         localStorage.setItem("theme", currentTheme);
+        
+        events.emit("theme:changed", currentTheme);
     });
 
     // 4. Add a matchMedia change listener for system theme changes

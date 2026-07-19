@@ -1,5 +1,6 @@
 import { getBusinessUnits, getLocations, getCompanies } from "./lookups.js";
 import { getById, getAll, create, update } from "./attributes.js";
+import { events } from "./events.js";
 import {
     validateAttributeName, validateBusinessUnitId,
     validateCustomerLocationId, validateCompanyId, validateCreatedOn,
@@ -331,6 +332,8 @@ export function initForm() {
                 formData.id = "ATTR" + Date.now(); // Quick way to make a unique ID
                 create(formData);
             }
+
+            events.emit("attribute:saved", formData);
 
             // 3. Send the user back to the dashboard
             window.location.href = "index.html";
