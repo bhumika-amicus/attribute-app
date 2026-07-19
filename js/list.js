@@ -115,8 +115,6 @@ function loadStateFromUrl() {
 
 
 export function initList() {
-    render();
-    
     events.on("attribute:deleted", async (id) => {
         await render();
         showToast(`Deleted Attribute successfully`);
