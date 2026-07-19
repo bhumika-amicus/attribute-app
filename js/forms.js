@@ -1,6 +1,10 @@
 import { getBusinessUnits, getLocations, getCompanies } from "./lookups.js";
-import { getById } from "./attributes.js";
-
+import { getById, getAll } from "./attributes.js";
+import {
+    validateAttributeName, validateBusinessUnitId,
+    validateCustomerLocationId, validateCompanyId, validateCreatedOn,
+    validateNotes
+} from "./validation.js";
 
 export function initForm() {
     // 1. Get DOM elements
@@ -18,7 +22,11 @@ export function initForm() {
     const companies = getCompanies();
 
     // 3. Populate Business Unit dropdown
-    businessUnitSelect.innerHTML = `<option value="">Select Business Unit</option>`;
+    businessUnitSelect.replaceChildren();
+    const defaultBuOption = document.createElement("option");
+    defaultBuOption.value = "";
+    defaultBuOption.textContent = "Select Business Unit";
+    businessUnitSelect.appendChild(defaultBuOption);
     businessUnits.forEach(bu => {
         const option = document.createElement("option");
         option.value = bu.id;
@@ -27,7 +35,11 @@ export function initForm() {
     });
 
     // 4. Populate Company dropdown
-    companySelect.innerHTML = `<option value="">Select Company</option>`;
+    companySelect.replaceChildren();
+    const defaultCompanyOption = document.createElement("option");
+    defaultCompanyOption.value = "";
+    defaultCompanyOption.textContent = "Select Company";
+    companySelect.appendChild(defaultCompanyOption);
     companies.forEach(company => {
         const option = document.createElement("option");
         option.value = company.id;
@@ -39,7 +51,11 @@ export function initForm() {
 
     // Helper to reset and disable Location dropdown
     const resetLocationDropdown = () => {
-        customerLocationSelect.innerHTML = `<option value="">Select a Business Unit first</option>`;
+        customerLocationSelect.replaceChildren();
+        const placeholderOption = document.createElement("option");
+        placeholderOption.value = "";
+        placeholderOption.textContent = "Select a Business Unit first";
+        customerLocationSelect.appendChild(placeholderOption);
         customerLocationSelect.disabled = true;
     };
 
@@ -51,7 +67,11 @@ export function initForm() {
         }
 
         const filteredLocations = locations.filter(loc => loc.businessUnitId === buId);
-        customerLocationSelect.innerHTML = `<option value="">Select Customer Location</option>`;
+        customerLocationSelect.replaceChildren();
+        const defaultLocOption = document.createElement("option");
+        defaultLocOption.value = "";
+        defaultLocOption.textContent = "Select Customer Location";
+        customerLocationSelect.appendChild(defaultLocOption);
 
         filteredLocations.forEach(loc => {
             const option = document.createElement("option");
@@ -66,9 +86,19 @@ export function initForm() {
     // Initialize dependent logic on page load
     resetLocationDropdown();
 
+    // Set max date to today for created-on field
+    const createdOnInput = document.getElementById("created-on");
+    if (createdOnInput) {
+        createdOnInput.setAttribute("max", new Date().toISOString().split("T")[0]);
+    }
+
     // Listen for Business Unit changes to update Locations
     businessUnitSelect.addEventListener("change", (e) => {
         populateLocationDropdown(e.target.value);
+        // If the user already typed an attribute name, re-validate it for uniqueness
+        if (touchedFields.has("attribute-name")) {
+            validateField("attribute-name");
+        }
     });
 
     // --- EDIT MODE PRE-FILL LOGIC ---
@@ -96,4 +126,185 @@ export function initForm() {
     }
 
 
+    // --- STEP 4: VALIDATION ENGINE ---
+
+    // This Set keeps track of which fields the user has interacted with
+    const touchedFields = new Set();
+    const formEl = document.getElementById("attribute-form");
+
+    /**
+     * Helper to show or hide an error message on the screen.
+     * @param {string} fieldId - The HTML id of the input (e.g., "attribute-name")
+     * @param {string|null} errorMessage - The error string, or null if valid
+     */
+    const renderError = (fieldId, errorMessage) => {
+        const inputEl = document.getElementById(fieldId);
+        const errorSpan = document.getElementById(`${fieldId}-error`);
+
+        if (!inputEl || !errorSpan) return;
+
+        if (errorMessage) {
+            // It's invalid! Show the error.
+            errorSpan.textContent = errorMessage;
+            inputEl.classList.add("form-field--invalid");
+            inputEl.setAttribute("aria-invalid", "true");
+        } else {
+            // It's valid! Clear the error.
+            errorSpan.textContent = "";
+            inputEl.classList.remove("form-field--invalid");
+            inputEl.removeAttribute("aria-invalid");
+        }
+    };
+
+    /**
+ * The Master Validator. Looks at a field's ID, finds its value, 
+ * runs the specific pure function, and renders the error.
+ * @returns {string|null} - The error message, or null if valid.
+ */
+    const validateField = (fieldId) => {
+        const inputEl = document.getElementById(fieldId);
+        if (!inputEl) return null;
+
+        const value = inputEl.value;
+        let errorMessage = null;
+
+        // Route to the correct pure function based on the HTML ID
+        switch (fieldId) {
+            case "attribute-name":
+                errorMessage = validateAttributeName(
+                    value,
+                    getAll(),
+                    id, // 'id' from the URL (null if adding)
+                    businessUnitSelect.value // currently selected BU
+                );
+                break;
+            case "business-unit":
+                errorMessage = validateBusinessUnitId(value);
+                break;
+            case "customer-location":
+                errorMessage = validateCustomerLocationId(
+                    value,
+                    businessUnitSelect.value,
+                    getLocations()
+                );
+                break;
+            case "company":
+                errorMessage = validateCompanyId(value);
+                break;
+            case "created-on":
+                errorMessage = validateCreatedOn(value);
+                break;
+            case "notes":
+                errorMessage = validateNotes(value);
+                break;
+        }
+
+        renderError(fieldId, errorMessage);
+        return errorMessage;
+    };
+
+    // --- STEP 6: TIMING EVENTS (Touched / Dirty logic) ---
+
+    // 1. BLUR (focusout): When the user clicks away from a field
+    formEl.addEventListener("focusout", (event) => {
+        const fieldId = event.target.id;
+
+        // Add it to our touched set because they interacted with it
+        touchedFields.add(fieldId);
+
+        // Validate it immediately
+        validateField(fieldId);
+    });
+
+    // 2. INPUT: When the user is actively typing
+    formEl.addEventListener("input", (event) => {
+        const fieldId = event.target.id;
+
+        // ONLY validate while typing IF they have already blurred it once.
+        // This prevents yelling at the user while they are typing their very first letter.
+        if (touchedFields.has(fieldId)) {
+            validateField(fieldId);
+        }
+    });
+
+    // --- STEP 7: SUBMIT EVENT & ERROR SUMMARY ---
+    formEl.addEventListener("submit", (event) => {
+        event.preventDefault(); // Stop the page from reloading!
+
+        // The exact HTML IDs of the fields we need to check
+        const fieldsToValidate = [
+            "attribute-name",
+            "business-unit",
+            "customer-location",
+            "company",
+            "created-on",
+            "notes"
+        ];
+
+        let hasErrors = false;
+        const errorMessages = [];
+
+        // Force every field to be "touched" and validate them all at once
+        fieldsToValidate.forEach(fieldId => {
+            touchedFields.add(fieldId);
+            const error = validateField(fieldId);
+
+            if (error) {
+                hasErrors = true;
+                // Find the label text so our summary box is user-friendly
+                const label = document.querySelector(`label[for="${fieldId}"]`).textContent.trim();
+                errorMessages.push({ fieldId, label, error });
+            }
+        });
+
+        const errorSummaryEl = document.getElementById("form-error-summary");
+
+        if (hasErrors) {
+            errorSummaryEl.replaceChildren();
+
+            const title = document.createElement("p");
+            const strong = document.createElement("strong");
+            strong.textContent = "Please fix the following errors before submitting:";
+            title.appendChild(strong);
+            errorSummaryEl.appendChild(title);
+
+            const ul = document.createElement("ul");
+            errorMessages.forEach(err => {
+                const li = document.createElement("li");
+                const a = document.createElement("a");
+                a.href = `#${err.fieldId}`;
+                a.textContent = `${err.label}: ${err.error}`;
+                li.appendChild(a);
+                ul.appendChild(li);
+            });
+            errorSummaryEl.appendChild(ul);
+            
+            errorSummaryEl.hidden = false;
+
+            // CRITICAL WCAG ACCESSIBILITY: Move focus to the summary box so screen readers 
+            // instantly read out the errors to blind users, rather than them wondering why it didn't save.
+            errorSummaryEl.setAttribute("tabindex", "-1");
+            errorSummaryEl.focus();
+        } else {
+            // Form is perfectly valid! Hide the summary.
+            errorSummaryEl.hidden = true;
+            errorSummaryEl.replaceChildren();
+
+            // We will actually save the data to storage in Task 12!
+            alert("Success! The form is valid. (Saving data logic comes in Task 12)");
+        }
+    });
+
+    // --- STEP 8: LIVE CHARACTER COUNTER FOR NOTES ---
+    const notesEl = document.getElementById("notes");
+    const notesHintEl = document.getElementById("notes-hint");
+    if (notesEl && notesHintEl) {
+        notesEl.addEventListener("input", (e) => {
+            const length = e.target.value.length;
+            notesHintEl.textContent = `${length} / 500 characters`;
+        });
+    }
+
+
 }
+

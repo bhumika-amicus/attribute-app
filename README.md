@@ -862,3 +862,23 @@ If a global single-toast manager stores its timer in a single variable, rapidly 
 When translating the dependent-dropdown pattern to a real backend, developers must choose between eager-loading and lazy-loading:
 - **Eager-load (All at once):** The client fetches all business units and *all* locations in one large payload on initial load, doing the filtering in browser memory (as we did here). This uses fewer network requests (better for high-latency connections) but results in a larger initial payload, which could be slow if there are tens of thousands of locations.
 - **Fetch per change (Lazy-load):** The client fetches only the business units initially. When the user selects a BU, the client makes a targeted API request (e.g., `GET /api/locations?businessUnitId=BU001`). This keeps the initial payload small and memory usage low, but it introduces a slight network delay (latency) every time the user changes the business unit drop-down.
+
+## Tasks 10 & 11 — Custom Validations & Timing
+
+### HTML Validation Limitations
+HTML5 provides built-in validation attributes (like `required`, `pattern`, `minlength`), but uniqueness validation is impossible in HTML alone because HTML has no concept of application state or the ability to query a database/list of existing records to compare against.
+
+### Defense in Depth (BU Check)
+Even though the UI restricts the location dropdown to valid locations, a malicious user can easily use browser Developer Tools to manually change the `value` of an `<option>` element before submitting. Server-side (and JavaScript) validation must verify the logical relationship (defense in depth) to prevent corrupted data from entering the database.
+
+### WCAG Focus Management
+Setting focus to the error summary on submit failure is a critical WCAG accessibility concern. Without it, screen reader users who click submit would hear silence (or whatever element naturally falls next), completely unaware that the submission failed or that error messages appeared elsewhere on the page. Moving focus ensures the errors are immediately announced.
+
+### Validation Timing Comparison (Manual vs. Angular)
+| Our Manual State | Angular Reactive Forms Equivalent | Description |
+| :--- | :--- | :--- |
+| `!touchedFields.has(field)` | `ng-untouched` | Field has never lost focus. |
+| `touchedFields.has(field)` | `ng-touched` | Field has lost focus at least once (blur event fired). |
+| `value !== ""` (implied via our input listener) | `ng-dirty` | The user has changed the value in the UI. |
+
+By building this by hand, we learn that Angular's Reactive Forms gives us state tracking (touched, dirty, pristine, valid, invalid) entirely for free, bound directly to the HTML template without needing manual event listeners. However, it does NOT give you the actual business logic (like "Attribute Name must be unique within a BU"); you still have to write those custom validator functions yourself.

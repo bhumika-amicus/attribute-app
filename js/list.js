@@ -693,19 +693,25 @@ export function showToast(message, type = "success") {
     toast.setAttribute("role", "status");
     toast.setAttribute("aria-live", "polite");
 
-    toast.innerHTML = `
-        <div class="toast__content">
-            <p class="toast__title">${message}</p>
-        </div>
-        <button type="button" class="toast__close" aria-label="Close notification">
-            &times;
-        </button>
-    `;
+    const contentDiv = document.createElement("div");
+    contentDiv.className = "toast__content";
+    const titleP = document.createElement("p");
+    titleP.className = "toast__title";
+    titleP.textContent = message;
+    contentDiv.appendChild(titleP);
+    
+    const closeBtn = document.createElement("button");
+    closeBtn.type = "button";
+    closeBtn.className = "toast__close";
+    closeBtn.setAttribute("aria-label", "Close notification");
+    closeBtn.innerHTML = "&times;"; // safe since it's hardcoded entity
+    
+    toast.appendChild(contentDiv);
+    toast.appendChild(closeBtn);
 
     container.appendChild(toast);
 
     // Close button logic
-    const closeBtn = toast.querySelector(".toast__close");
     closeBtn.addEventListener("click", () => {
         if (toastTimers.has(toast)) {
             clearTimeout(toastTimers.get(toast));
