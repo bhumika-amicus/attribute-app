@@ -855,3 +855,10 @@ The client relies on `meta.totalItems` to generate the correct number of paginat
 
 ### Toast Overlap Bug
 If a global single-toast manager stores its timer in a single variable, rapidly triggering multiple toasts will overwrite that variable, leaving the previous timeouts orphaned and active. The stale timers will then fire prematurely, unexpectedly hiding the newly rendered toast. By using a `Map` that associates each unique toast DOM element with its specific timer ID, we can independently track and clear the correct timer whenever a toast is closed manually or superseded.
+
+## Task 9 — Dependent Dropdowns
+
+### Backend Translation and Trade-offs
+When translating the dependent-dropdown pattern to a real backend, developers must choose between eager-loading and lazy-loading:
+- **Eager-load (All at once):** The client fetches all business units and *all* locations in one large payload on initial load, doing the filtering in browser memory (as we did here). This uses fewer network requests (better for high-latency connections) but results in a larger initial payload, which could be slow if there are tens of thousands of locations.
+- **Fetch per change (Lazy-load):** The client fetches only the business units initially. When the user selects a BU, the client makes a targeted API request (e.g., `GET /api/locations?businessUnitId=BU001`). This keeps the initial payload small and memory usage low, but it introduces a slight network delay (latency) every time the user changes the business unit drop-down.

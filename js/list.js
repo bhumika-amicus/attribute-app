@@ -1,7 +1,7 @@
 // js/list.js
 
 import { getAll, getSortedAttributes, remove } from "./attributes.js";
-import {getBusinessUnits, getLocations, getCompanies} from "./lookups.js";
+import { getBusinessUnits, getLocations, getCompanies } from "./lookups.js";
 import { formatFullDate } from "./dateUtils.js";
 import { $, createFragment } from "./dom.js";
 
@@ -75,7 +75,7 @@ function updateUrlFromState() {
         );
 
     }
-    
+
     if (state.currentPage > 1) {
         params.set("page", state.currentPage);
     }
@@ -208,8 +208,9 @@ export function initList() {
     );
 
     const paginationList = document.getElementById("pagination-list");
+
     paginationList?.addEventListener("click", handlePaginationClick);
-    
+
     tableBody.addEventListener("click", handleTableClick);
 
     const filterForm =
@@ -385,7 +386,7 @@ export function render() {
     const filteredAttributes =
         getFilteredAttributes();
 
-   
+
     const businessUnits =
         getBusinessUnits();
 
@@ -394,7 +395,7 @@ export function render() {
 
     const companies =
         getCompanies();
-    
+
     const attributes =
         getSortedAttributes(
             filteredAttributes,
@@ -402,14 +403,14 @@ export function render() {
             state.sortDirection
         );
 
+    //index and slicing for pagination
     const startIndex = (state.currentPage - 1) * state.rowsPerPage;
     const endIndex = startIndex + state.rowsPerPage;
     const paginatedAttributes = attributes.slice(startIndex, endIndex);
 
     tableBody.replaceChildren();
-
     const fragment = createFragment();
-    
+
     paginatedAttributes.forEach(attribute => {
 
         const row =
@@ -541,7 +542,7 @@ function createRow(attribute, businessUnits, locations, companies) {
 
     deleteButton.dataset.id =
         attribute.id;
-    deleteButton.dataset.name = 
+    deleteButton.dataset.name =
         attribute.attributeName;
 
 
@@ -598,6 +599,8 @@ function handlePaginationClick(event) {
     }
 
     const newPage = parseInt(button.dataset.page, 10);
+
+    //do not render if on same page 
     if (newPage && newPage !== state.currentPage) {
         state.currentPage = newPage;
         updateUrlFromState();
@@ -611,6 +614,7 @@ function renderPagination(totalItems) {
 
     paginationList.replaceChildren();
 
+    // Total number of pages 
     const totalPages = Math.ceil(totalItems / state.rowsPerPage);
     if (totalPages === 0) {
         return;
@@ -624,12 +628,17 @@ function renderPagination(totalItems) {
     const prevBtn = document.createElement("button");
     prevBtn.type = "button";
     prevBtn.classList.add("pagination__button");
+
+    //find previous page 
     prevBtn.dataset.page = state.currentPage - 1;
+    //dont find previous if current page is 1 as it will be 0
     prevBtn.disabled = state.currentPage === 1;
+
     prevBtn.setAttribute("aria-label", "Previous page");
     prevBtn.textContent = "← Prev";
     prevLi.appendChild(prevBtn);
     fragment.appendChild(prevLi);
+
 
     // Numbered Pages
     for (let i = 1; i <= totalPages; i++) {
@@ -637,7 +646,7 @@ function renderPagination(totalItems) {
         pageLi.classList.add("pagination__item");
         const pageBtn = document.createElement("button");
         pageBtn.type = "button";
-        
+
         // In the original, the active state is .pagination__link--active, 
         // but here it's a button. We will use a button instead of a link.
         pageBtn.classList.add("pagination__link");
@@ -645,7 +654,7 @@ function renderPagination(totalItems) {
             pageBtn.classList.add("pagination__link--active");
             pageBtn.setAttribute("aria-current", "page");
         }
-        
+
         pageBtn.dataset.page = i;
         pageBtn.setAttribute("aria-label", `Page ${i}`);
         pageBtn.textContent = i;
@@ -659,7 +668,10 @@ function renderPagination(totalItems) {
     const nextBtn = document.createElement("button");
     nextBtn.type = "button";
     nextBtn.classList.add("pagination__button");
+
+    // find next page 
     nextBtn.dataset.page = state.currentPage + 1;
+    //dont find next if current page is last page
     nextBtn.disabled = state.currentPage === totalPages;
     nextBtn.setAttribute("aria-label", "Next page");
     nextBtn.textContent = "Next →";
@@ -707,7 +719,7 @@ export function showToast(message, type = "success") {
         toast.remove();
         toastTimers.delete(toast);
     }, 3000);
-    
+
     // Track timer for this specific toast to handle cleanup if closed manually
     toastTimers.set(toast, timerId);
 }
@@ -721,7 +733,7 @@ function handleTableClick(event) {
 
     if (confirm(`Are you sure you want to delete ${name}?`)) {
         remove(id);
-        
+
         // Adjust pagination if we deleted the last item on the current page
         const filteredAttributes = getFilteredAttributes();
         const totalPages = Math.ceil(filteredAttributes.length / state.rowsPerPage);
