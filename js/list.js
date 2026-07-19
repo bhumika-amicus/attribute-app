@@ -27,14 +27,17 @@ let statusSelect;
 
 let tableHead;
 
+let currentSearchController = null;
+
 function debounce(callback, delay) {
 
     let timeoutId;
 
     return (...args) => {
-
+        // Destroy the old timer
         clearTimeout(timeoutId);
-
+        // Start a brand new timer
+        console.log(` Debounce: Resetting the 500ms timer...`);
         timeoutId = setTimeout(
             () => callback(...args),
             delay
@@ -154,20 +157,34 @@ export function initList() {
 
     searchInput?.addEventListener(
         "input",
-        debounce(event => {
+        debounce(async (event) => {
 
-            state.search =
-                event.target.value;
 
+            state.search = event.target.value;
             state.currentPage = 1;
-
             updateUrlFromState();
 
-            render();
+            // 1. If an old search is currently running, PRESS THE KILL SWITCH!
+            if (currentSearchController) {
+                currentSearchController.abort();
+            }
 
+            // 2. Create a brand new Kill Switch for this specific search
+            currentSearchController = new AbortController();
+
+            try {
+                // 3. Pass the kill signal down into our render function
+                await render(currentSearchController.signal);
+            } catch (error) {
+                // 4. If the error is an AbortError, that means we successfully killed it!
+                if (error.name === "AbortError") {
+                    console.log("Successfully cancelled the old, stale search!  ");
+                } else {
+                    console.error("A real error occurred:", error);
+                }
+            }
         }, 500)
     );
-
 
 
     businessUnitSelect?.addEventListener(
@@ -380,7 +397,16 @@ function getFilteredAttributes() {
     Main render function
 */
 
-export function render() {
+// Add 'async' and accept the 'signal' parameter
+async function render(signal) {
+
+    // 1. Artificially pause for 1 second to simulate a slow database
+    await new Promise(resolve => setTimeout(resolve, 5000));
+    // 2. Before we spend any effort building the HTML table, check the Kill Switch!
+    if (signal && signal.aborted) {
+        // If the switch was pressed, throw an AbortError and STOP!
+        throw new DOMException("Search cancelled", "AbortError");
+    }
 
 
     const filteredAttributes =
@@ -699,13 +725,13 @@ export function showToast(message, type = "success") {
     titleP.className = "toast__title";
     titleP.textContent = message;
     contentDiv.appendChild(titleP);
-    
+
     const closeBtn = document.createElement("button");
     closeBtn.type = "button";
     closeBtn.className = "toast__close";
     closeBtn.setAttribute("aria-label", "Close notification");
     closeBtn.innerHTML = "&times;"; // safe since it's hardcoded entity
-    
+
     toast.appendChild(contentDiv);
     toast.appendChild(closeBtn);
 

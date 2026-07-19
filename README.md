@@ -882,3 +882,27 @@ Setting focus to the error summary on submit failure is a critical WCAG accessib
 | `value !== ""` (implied via our input listener) | `ng-dirty` | The user has changed the value in the UI. |
 
 By building this by hand, we learn that Angular's Reactive Forms gives us state tracking (touched, dirty, pristine, valid, invalid) entirely for free, bound directly to the HTML template without needing manual event listeners. However, it does NOT give you the actual business logic (like "Attribute Name must be unique within a BU"); you still have to write those custom validator functions yourself.
+
+---
+
+# Task 13 – Promise.all vs Promise.allSettled
+
+**Promise.all** uses a "fail-fast" behavior. If even *one* of our 4 JSON files fails to download, the entire Promise immediately rejects and throws an error. I picked `Promise.all` for this task because our app is useless without all 4 files. If `locations.json` fails to load, the user can't fill out the form properly, so we *want* the app to fail-fast and show an error banner rather than loading a broken experience.
+
+**Promise.allSettled** uses a "collect-all" behavior. It waits for every single request to finish, even if some of them fail, and gives you a list of the successes and failures. This would be bad for our app, because we don't want to load half a database.
+
+**Promise.any** solves a completely different problem: "race to the finish." It fires off multiple requests and immediately resolves the millisecond the *first* one succeeds, ignoring the rest. 
+
+---
+
+# Task 14 – AbortController and Stale-Response-Wins
+
+**Why is debounce alone not enough?**
+Using a debounce prevents sending an excessive number of requests, but it does not solve the "Stale-Response-Wins" bug. If a slow request is fired, followed immediately by a fast request, the slow request might resolve *after* the fast one, causing its outdated data to overwrite the UI. 
+
+**How does AbortController fix this?**
+An `AbortController` fixes this by acting as a kill switch. Before we fire a new search request, we call `abort()` on the previous request's controller. This guarantees that any outdated requests are instantly cancelled and throw an `AbortError`, ensuring only the absolute latest request can ever reach the UI. 
+
+**When else would you use AbortController in vanilla JS?**
+It is incredibly useful for cleanly removing event listeners without needing to keep a reference to the original function (by passing `{ signal: controller.signal }` to `addEventListener`), aborting `ReadableStream` operations, and cancelling `fetch()` requests.
+
