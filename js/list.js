@@ -408,7 +408,9 @@ async function render(signal) {
 
     const filteredAttributes =
         getFilteredAttributes();
-
+        
+    // Update the Quick Stats sidebar with the current filtered data!
+    updateQuickStats(filteredAttributes);
 
     const businessUnits =
         getBusinessUnits();
@@ -455,6 +457,24 @@ async function render(signal) {
 
 }
 
+/*
+    Update the Quick Stats sidebar dynamically
+*/
+function updateQuickStats(attributes) {
+    const quickStatsAside = document.getElementById("quick-stats");
+    if (!quickStatsAside) return;
+
+    const total = attributes.length;
+    const active = attributes.filter(a => a.isActive).length;
+    const inactive = total - active;
+
+    quickStatsAside.innerHTML = `
+        <h2>Quick Stats</h2>
+        <p>Total Attributes: ${total}</p>
+        <p>Active: ${active}</p>
+        <p>Inactive: ${inactive}</p>
+    `;
+}
 
 /*
     Create one table row
@@ -483,7 +503,7 @@ function createRow(attribute, businessUnits, locations, companies) {
         Business Unit
     */
     const businessUnit = businessUnits.find(unit => unit.id === attribute.businessUnitId);
-    const businessCell = createCell(businessUnit?.name ?? "-");
+    const businessCell = createCell(businessUnit?.name ?? "-", "Business Unit");
 
     tr.appendChild(businessCell);
 
@@ -491,19 +511,20 @@ function createRow(attribute, businessUnits, locations, companies) {
         Location
     */
     const location = locations.find(unit => unit.id === attribute.customerLocationId);
-    const locationCell = createCell(location?.name ?? "-");
+    const locationCell = createCell(location?.name ?? "-", "Customer Location");
     tr.appendChild(locationCell);
 
     /*
         Company
     */
     const company = companies.find(unit => unit.id === attribute.companyId);
-    const companyCell = createCell(company?.name ?? "-");
+    const companyCell = createCell(company?.name ?? "-", "Company");
     tr.appendChild(companyCell);
     /*
         Status badge
     */
     const statusCell = document.createElement("td");
+    statusCell.dataset.label = "Status";
     const badge = document.createElement("span");
     badge.classList.add("badge");
     if (attribute.isActive) {
@@ -524,13 +545,15 @@ function createRow(attribute, businessUnits, locations, companies) {
         createCell(
             formatFullDate(
                 attribute.createdOn
-            )
+            ),
+            "Created On"
         );
 
     tr.appendChild(createdCell);
 
     /* Actions */
     const actionCell = document.createElement("td");
+    actionCell.dataset.label = "Actions";
     const actionsWrapper = document.createElement("div");
     actionsWrapper.classList.add("action-buttons", "cluster");
 
@@ -594,12 +617,17 @@ function createRow(attribute, businessUnits, locations, companies) {
 /*
     Create normal table cell
 */
-function createCell(value) {
+function createCell(value, label) {
     const td =
         document.createElement("td");
 
     td.textContent =
         value;
+        
+    if (label) {
+        td.dataset.label = label;
+    }
+    
     return td;
 }
 /*

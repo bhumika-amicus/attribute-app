@@ -71,6 +71,8 @@ main,
 /* Contain the table strictly inside #results-section so horizontal scrollbars stay right under the table without bleeding onto Quick Stats */
 #results-section {
   max-width: 100%;
+  width: 100%; /* Force it to respect the flex container width */
+  min-width: 0; /* Prevent flex item blowout */
   overflow-x: auto;
   overflow-y: visible;
 }
