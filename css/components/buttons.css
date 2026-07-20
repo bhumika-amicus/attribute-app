@@ -214,3 +214,8 @@ button[type="reset"]:not(.btn--primary):not(.btn--danger):hover:not(:disabled) {
   margin: 0;
   display: inline-flex;
 }
+
+/* Ensure action buttons in tables have a consistent size */
+.action-buttons .btn {
+  min-width: 100px;
+}

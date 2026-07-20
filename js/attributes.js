@@ -95,7 +95,8 @@ export function update(id, updatedData) {
 export function getSortedAttributes(
   attributes,
   sortColumn,
-  sortDirection
+  sortDirection,
+  lookups
 ) {
 
   if (
@@ -113,7 +114,8 @@ export function getSortedAttributes(
         a,
         b,
         sortColumn,
-        sortDirection
+        sortDirection,
+        lookups
       )
   );
 }

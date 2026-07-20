@@ -394,7 +394,8 @@ async function render(signal) {
         getSortedAttributes(
             filteredAttributes,
             state.sortColumn,
-            state.sortDirection
+            state.sortDirection,
+            { businessUnits, locations, companies }
         );
 
     const totalPages = Math.ceil(attributes.length / state.rowsPerPage);
