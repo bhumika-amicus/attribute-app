@@ -17,7 +17,7 @@
   --color-neutral-900: #212529;
 
   /* State / Feedback Colors */
-  --color-danger: #d9534f;
+  --color-danger: #a32f2b;
   --color-danger-bg: #fdf2f2;
   --color-success: #28a745;
   --color-focus-ring: hsl(var(--color-primary-hue), 90%, 65%);

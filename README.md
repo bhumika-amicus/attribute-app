@@ -930,4 +930,8 @@ The application was audited using Google Chrome's built-in Lighthouse tool to en
 ![Add Page Lighthouse Audit](assets/add_page_lighthouse_JS.png)
 ![Edit Page Lighthouse Audit](assets/Edit_page_lighthouse_JS.png)
 
-All scores successfully exceeded the assignment target thresholds (≥95 and ≥90). No trade-off explanations were necessary as there were no failing categories.
+All scores successfully exceeded the assignment target thresholds (≥95 and ≥90). 
+
+For the index.html page the issue was regarding the comtrast of color of delete button, hence the color contrast was increased and the accessibility improved.
+
+![lighthouse accessibility](assets/index_page_lighthouse_js_improved.png)
