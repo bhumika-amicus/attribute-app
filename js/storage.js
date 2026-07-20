@@ -25,7 +25,8 @@ function safeParse(value, fallback = []) {
 
   try {
     return JSON.parse(value);
-  } catch {
+  } catch (error){
+    console.error("Invalid JSON in LocalStorage:", error);
     return fallback;
   }
 }
@@ -259,8 +260,7 @@ export async function seedApplicationData() {
 
 
   if (
-    getSeedVersion() === CURRENT_SEED_VERSION
-  ) {
+    getSeedVersion() === CURRENT_SEED_VERSION ) {
 
     return {
       attributes: loadData(
