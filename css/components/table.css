@@ -36,11 +36,11 @@ thead {
 }
 
 th {
-  padding: var(--space-3) var(--space-4);
+  padding: var(--space-3) var(--space-2);
   text-align: left;
   font-weight: 700;
   color: var(--color-text);
-  white-space: nowrap;
+  white-space: normal;
 }
 
 /* Correct text alignment per data type (Actions and Status centered/aligned appropriately) */
