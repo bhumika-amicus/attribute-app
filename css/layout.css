@@ -97,6 +97,8 @@ footer[role="contentinfo"],
 
 /* Header basic layout */
 .site-header {
+  display: flex;
+  align-items: center;
   padding-block: var(--space-3);
   border-bottom: 2px solid var(--color-border);
 }
