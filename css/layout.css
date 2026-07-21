@@ -224,7 +224,7 @@ footer[role="contentinfo"] {
 /* 3. Desktop Layout (≥ 64em / 1024px): Full 3-Column Grid (Nav sidebar | Main center | Aside sidebar) */
 @media (min-width: 64em) {
   body {
-    grid-template-columns: 240px minmax(0, 1fr) 280px;
+    grid-template-columns: 180px minmax(0, 1fr) 240px;
     grid-template-areas:
       "header header header"
       "nav    main   aside "
