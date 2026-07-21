@@ -4,7 +4,6 @@
 /* 1. Desktop Table Setup (Default Base & ≥ 48em / 768px) */
 table {
   width: 100%;
-  margin-block: var(--space-4);
   background: var(--color-surface);
   border-radius: var(--radius-md);
   /* Note: overflow: hidden removed from table so `position: sticky` on <th> works when scrolling the window! */
@@ -19,7 +18,8 @@ caption {
   font-size: var(--fs-sm);
   color: var(--color-muted);
   text-align: left;
-  margin-block-end: var(--space-2);
+
+
 }
 
 /* Sticky table header across scrollable containers */
