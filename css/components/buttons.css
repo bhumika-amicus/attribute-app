@@ -48,6 +48,7 @@ button[type="button"] {
 
 /* Compositor-friendly transitions wrapped in prefers-reduced-motion */
 @media (prefers-reduced-motion: no-preference) {
+
   .btn,
   button[type="submit"],
   button[type="reset"],
@@ -66,6 +67,7 @@ button[type="button"]:active:not(:disabled) {
 
 /* No-animation fallback when reduced motion is requested */
 @media (prefers-reduced-motion: reduce) {
+
   .btn:active:not(:disabled),
   button[type="submit"]:active:not(:disabled),
   button[type="reset"]:active:not(:disabled),
@@ -133,7 +135,7 @@ button[type="reset"]:not(.btn--primary):not(.btn--danger):hover:not(:disabled) {
   background-color: var(--color-danger);
   color: #ffffff;
   box-shadow: var(--shadow-1);
-  
+
 }
 
 .btn--danger:hover:not(:disabled) {
@@ -154,7 +156,6 @@ button[type="reset"]:not(.btn--primary):not(.btn--danger):hover:not(:disabled) {
 
 /* Small Button (.btn--sm) — compact 36px touch target for dense data cells */
 .btn--sm {
-  min-height: 36px;
   padding: var(--space-1) var(--space-3);
   font-size: var(--fs-sm);
 }
@@ -215,7 +216,19 @@ button[type="reset"]:not(.btn--primary):not(.btn--danger):hover:not(:disabled) {
   display: inline-flex;
 }
 
-/* Ensure action buttons in tables have a consistent size */
+/* Arrange action buttons horizontally side-by-side */
+.action-buttons {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: var(--space-2);
+  /* Align to the right */
+}
+
+/* Ensure action buttons don't get excessively wide, but remove the strict 100px minimum so they can shrink */
 .action-buttons .btn {
-  min-width: 100px;
+  flex-shrink: 1;
+  /* Allow them to shrink if necessary */
+  padding-inline: var(--space-2);
+  /* Slightly reduce horizontal padding for small buttons */
 }

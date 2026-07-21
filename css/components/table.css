@@ -44,7 +44,7 @@ th {
 }
 
 /* Correct text alignment per data type (Actions and Status centered/aligned appropriately) */
-th#actions-header,
+
 td:last-child {
   text-align: right;
 }
